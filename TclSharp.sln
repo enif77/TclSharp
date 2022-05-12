@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp", "src\TclSharp\TclSharp.csproj", "{7776D907-B96C-4E2A-971D-433EB8203371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core", "src\TclSharp.Core\TclSharp.Core.csproj", "{7BB0388D-E0CA-4B18-B70B-75592F827EB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Tests", "tests\TclSharp.Core.Tests\TclSharp.Core.Tests.csproj", "{B515C14F-029D-40B2-BEF8-370266628E37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B2798E6-EEFF-40F5-A923-A80570295AAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7776D907-B96C-4E2A-971D-433EB8203371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7776D907-B96C-4E2A-971D-433EB8203371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7776D907-B96C-4E2A-971D-433EB8203371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7776D907-B96C-4E2A-971D-433EB8203371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BB0388D-E0CA-4B18-B70B-75592F827EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BB0388D-E0CA-4B18-B70B-75592F827EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BB0388D-E0CA-4B18-B70B-75592F827EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BB0388D-E0CA-4B18-B70B-75592F827EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B515C14F-029D-40B2-BEF8-370266628E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B515C14F-029D-40B2-BEF8-370266628E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B515C14F-029D-40B2-BEF8-370266628E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B515C14F-029D-40B2-BEF8-370266628E37}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B515C14F-029D-40B2-BEF8-370266628E37} = {8B2798E6-EEFF-40F5-A923-A80570295AAB}
+	EndGlobalSection
+EndGlobal
