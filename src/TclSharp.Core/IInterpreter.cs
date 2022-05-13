@@ -15,19 +15,26 @@ public interface IInterpreter
 
     
     /// <summary>
-    /// Adds a command implementation to this instance. 
+    /// Adds a command to this instance. 
     /// </summary>
-    /// <param name="command">A command implementation.</param>
+    /// <param name="command">A command.</param>
     /// <returns>An IResult instance with the added command instance.</returns>
     IResult<ICommand> AddCommand(ICommand command);
 
-
     /// <summary>
-    /// Evaluates an parameter. Does all necessary substitutions and interpretations.
+    /// Checks, if a command implementation exists.
     /// </summary>
-    /// <param name="parameter">A command parameter value.</param>
-    /// <returns>An IResult instance with a string representing the result of the parameter evaluation.</returns>
-    IResult<string> EvaluateParameter(string parameter);
+    /// <param name="commandName">A command name.</param>
+    /// <returns>True, if a command implementation exists.</returns>
+    bool IsKnownCommand(string commandName);
+    
+    /// <summary>
+    /// Adds a command implementation to this instance. 
+    /// </summary>
+    /// <param name="commandName">A command name.</param>
+    /// <param name="commandImplementation">A command implementation.</param>
+    /// <returns>An IResult instance with the added command instance.</returns>
+    IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation);
 
     /// <summary>
     /// Executes all commands in this instance.

@@ -13,6 +13,7 @@ public class Interpreter : IInterpreter
         Output = output ?? throw new ArgumentNullException(nameof(output));
 
         _commands = new List<ICommand>();
+        _commandImplementations = new Dictionary<string, ICommandImplementation>();
     }
 
 
@@ -23,10 +24,23 @@ public class Interpreter : IInterpreter
         return Result<ICommand>.Ok(command, $"The '{command.Name}' command added.");
     }
 
-    
-    public IResult<string> EvaluateParameter(string parameter)
+
+    public bool IsKnownCommand(string commandName)
     {
-        return Result<string>.Ok(parameter, parameter);
+        return _commandImplementations.ContainsKey(commandName);
+    }
+
+
+    public IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation)
+    {
+        if (_commandImplementations.ContainsKey(commandName))
+        {
+            return Result<ICommandImplementation>.Error(commandImplementation, $"The '{commandName}' is already defined.");
+        }
+
+        _commandImplementations.Add(commandName, commandImplementation);
+
+        return Result<ICommandImplementation>.Ok(commandImplementation, $"The '{commandName}' command implementation added.");
     }
 
     
@@ -35,7 +49,14 @@ public class Interpreter : IInterpreter
         var lastResult = Result<string>.Ok();
         foreach (var command in _commands)
         {
-            lastResult = command.Execute();
+            if (_commandImplementations.ContainsKey(command.Name) == false)
+            {
+                return Result<string>.Error($"The '{command.Name}' not defined.");
+            }
+
+            var commandImplementation = _commandImplementations[command.Name];
+            
+            lastResult = commandImplementation.Execute(command);
             if (lastResult.IsSuccess == false)
             {
                 break;
@@ -47,4 +68,5 @@ public class Interpreter : IInterpreter
 
 
     private readonly List<ICommand> _commands;
+    private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
 }

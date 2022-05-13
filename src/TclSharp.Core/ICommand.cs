@@ -13,10 +13,8 @@ public interface ICommand
     /// </summary>
     string Name { get; }
 
-
     /// <summary>
-    /// The body (aka the operation) of this command.
+    /// A list of command arguments.
     /// </summary>
-    /// <returns>An IResult instance with a string representing the result of this command operation.</returns>
-    IResult<string> Execute();
+    IList<ICommandArgument> Arguments { get; }
 }

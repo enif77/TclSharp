@@ -3,6 +3,7 @@
 namespace TclSharp.Core.Extensions;
 
 using TclSharp.Core.Commands;
+using TclSharp.Core.CommandArguments;
 
 
 /// <summary>
@@ -19,6 +20,26 @@ public static class InterpreterExtensions
     /// <returns>The added ICommand instance.</returns>
     public static IResult<ICommand> AddPutsCommand(this IInterpreter interpreter, string? message = default, bool noNewLine = false)
     {
-        return interpreter.AddCommand(new PutsCommand(interpreter, message ?? string.Empty, noNewLine));
+        const string PutsCommandName = "puts";
+        
+        if (interpreter.IsKnownCommand(PutsCommandName) == false)
+        {
+            var addCommandImplementationResult = interpreter.AddCommandImplementation(PutsCommandName, new PutsCommand(interpreter));
+            if (addCommandImplementationResult.IsSuccess == false)
+            {
+                return Result<ICommand>.Error(addCommandImplementationResult.Message);
+            }
+        }
+
+        var command = new Command(PutsCommandName);
+
+        if (noNewLine)
+        {
+            command.Arguments.Add(new SimpleArgument("-nonewline"));
+        }
+
+        command.Arguments.Add(new SimpleArgument(message ?? string.Empty));
+        
+        return interpreter.AddCommand(command);
     }
 }
