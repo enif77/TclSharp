@@ -17,6 +17,11 @@ script.AddSetCommand("test", "test-value");
 script.AddSetCommand("test", "test-value2");
 script.AddSetCommand("test");
 
+script.AddPutsCommand("The test value is '$test'");
+
+script.AddSetCommand("test2", "$test");
+script.AddPutsCommand("$test2");
+
 
 var interpreter = new Interpreter(
     new ConsoleOutputWriter());
