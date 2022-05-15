@@ -12,8 +12,34 @@ public interface IInterpreter
     /// The text output for commands.
     /// </summary>
     IOutputWriter Output { get; }
-
     
+    #region variables
+
+    /// <summary>
+    /// Checks, if a certain variable exists.
+    /// </summary>
+    /// <param name="name">A variable name.</param>
+    /// <returns>True, if a variable with given name exists.</returns>
+    bool HasVariable(string name);
+
+    /// <summary>
+    /// Gets a value of a variable.
+    /// </summary>
+    /// <param name="name">A variable name.</param>
+    /// <returns>A variable value or an empty string, if no such variable exists.</returns>
+    string GetVariableValue(string name);
+
+    /// <summary>
+    /// Sets a value to a variable.
+    /// If no variable exists, creates it.
+    /// </summary>
+    /// <param name="name">A variable name.</param>
+    /// <param name="value">A value.</param>
+    void SetVariableValue(string name, string value);
+    
+    #endregion
+
+
     /// <summary>
     /// Checks, if a command implementation exists.
     /// </summary>

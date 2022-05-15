@@ -30,4 +30,25 @@ public static class ScriptExtensions
         
         return script.AddCommand(command);
     }
+
+    /// <summary>
+    /// Adds the set command to a script.
+    /// </summary>
+    /// <param name="script">An IScript instance.</param>
+    /// <param name="variableName">A variable name.</param>
+    /// <param name="value">An optional value.</param>
+    /// <returns>The added ICommand instance.</returns>
+    public static IResult<IScriptCommand> AddSetCommand(this IScript script, string variableName, string? value = default)
+    {
+        var command = new ScriptCommand("set");
+
+        command.Arguments.Add(new SimpleArgument(variableName));
+
+        if (value != null)
+        {
+            command.Arguments.Add(new SimpleArgument(value));
+        }
+
+        return script.AddCommand(command);
+    }
 }

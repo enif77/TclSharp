@@ -13,10 +13,16 @@ script.AddPutsCommand("Hello", true);
 script.AddPutsCommand(", world!");
 script.AddPutsCommand("By by...");
 
+script.AddSetCommand("test", "test-value");
+script.AddSetCommand("test", "test-value2");
+script.AddSetCommand("test");
+
+
 var interpreter = new Interpreter(
     new ConsoleOutputWriter());
 
 interpreter.AddPutsCommand();
+interpreter.AddSetCommand();
 
 var result = interpreter.Execute(script);
 

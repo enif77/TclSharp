@@ -13,8 +13,33 @@ public class Interpreter : IInterpreter
         Output = output ?? throw new ArgumentNullException(nameof(output));
 
         _commandImplementations = new Dictionary<string, ICommandImplementation>();
+        _variables = new Dictionary<string, string>();
     }
 
+    
+    #region variables
+
+    public bool HasVariable(string name)
+    {
+        return _variables.ContainsKey(name);
+    }
+
+
+    public string GetVariableValue(string name)
+    {
+        return _variables.ContainsKey(name)
+            ? _variables[name]
+            : string.Empty;
+    }
+
+
+    public void SetVariableValue(string name, string value)
+    {
+        _variables[name] = value;
+    }
+
+    #endregion
+    
     
     public bool IsKnownCommand(string commandName)
     {
@@ -61,4 +86,5 @@ public class Interpreter : IInterpreter
 
     
     private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
+    private readonly IDictionary<string, string> _variables;
 }
