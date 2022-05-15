@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.1");
+Console.WriteLine("TclSharp v0.0.2");
 
 var script = new Script();
 
@@ -19,8 +19,13 @@ script.AddSetCommand("test");
 
 script.AddPutsCommand("The test value is '$test'");
 
-script.AddSetCommand("test2", "$test");
-script.AddPutsCommand("$test2");
+script.AddSetCommand("test1", "$test");
+script.AddSetCommand("test2", "$test1 + $test");
+script.AddSetCommand("test3", "$test2 + $test");
+
+script.AddPutsCommand("test1 = $test1");
+script.AddPutsCommand("test2 = $test2");
+script.AddPutsCommand("test3 = $test3");
 
 
 var interpreter = new Interpreter(
