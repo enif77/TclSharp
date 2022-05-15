@@ -6,7 +6,7 @@ namespace TclSharp.Core;
 /// <summary>
 /// A script command.
 /// </summary>
-public interface ICommand
+public interface IScriptCommand
 {
     /// <summary>
     /// A name of this command.

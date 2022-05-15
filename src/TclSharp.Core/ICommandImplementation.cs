@@ -12,5 +12,5 @@ public interface ICommandImplementation
     /// The body (aka the operation) of this command.
     /// </summary>
     /// <returns>An IResult instance with a string representing the result of this command operation.</returns>
-    IResult<string> Execute(ICommand command);
+    IResult<string> Execute(IScriptCommand scriptCommand);
 }

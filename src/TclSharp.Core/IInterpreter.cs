@@ -15,13 +15,6 @@ public interface IInterpreter
 
     
     /// <summary>
-    /// Adds a command to this instance. 
-    /// </summary>
-    /// <param name="command">A command.</param>
-    /// <returns>An IResult instance with the added command instance.</returns>
-    IResult<ICommand> AddCommand(ICommand command);
-
-    /// <summary>
     /// Checks, if a command implementation exists.
     /// </summary>
     /// <param name="commandName">A command name.</param>
@@ -39,6 +32,7 @@ public interface IInterpreter
     /// <summary>
     /// Executes all commands in this instance.
     /// </summary>
+    /// <param name="script">A script.</param>
     /// <returns>An IResult instance with a string representing the result of this interpreter instance operation.</returns>
-    IResult<string> Execute();
+    IResult<string> Execute(IScript script);
 }

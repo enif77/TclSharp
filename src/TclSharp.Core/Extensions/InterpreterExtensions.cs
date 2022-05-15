@@ -3,7 +3,6 @@
 namespace TclSharp.Core.Extensions;
 
 using TclSharp.Core.Commands;
-using TclSharp.Core.CommandArguments;
 
 
 /// <summary>
@@ -12,34 +11,23 @@ using TclSharp.Core.CommandArguments;
 public static class InterpreterExtensions
 {
     /// <summary>
-    /// Adds the puts command to an interpreter.
+    /// Adds the puts command implementation to an interpreter.
     /// </summary>
     /// <param name="interpreter">An IInterpreter instance.</param>
-    /// <param name="message">A message.</param>
-    /// <param name="noNewLine">If true, no new line char(s) will be emitted at the end of this command output.</param>
-    /// <returns>The added ICommand instance.</returns>
-    public static IResult<ICommand> AddPutsCommand(this IInterpreter interpreter, string? message = default, bool noNewLine = false)
+    /// <returns>The IResult representing the add-command operation result.</returns>
+    public static IResult AddPutsCommand(this IInterpreter interpreter)
     {
-        const string PutsCommandName = "puts";
-        
-        if (interpreter.IsKnownCommand(PutsCommandName) == false)
+        const string putsCommandName = "puts";
+
+        if (interpreter.IsKnownCommand(putsCommandName))
         {
-            var addCommandImplementationResult = interpreter.AddCommandImplementation(PutsCommandName, new PutsCommand(interpreter));
-            if (addCommandImplementationResult.IsSuccess == false)
-            {
-                return Result<ICommand>.Error(addCommandImplementationResult.Message);
-            }
+            return SimpleResult.Ok($"The '{putsCommandName}' command implementation was already added.");
         }
-
-        var command = new Command(PutsCommandName);
-
-        if (noNewLine)
-        {
-            command.Arguments.Add(new SimpleArgument("-nonewline"));
-        }
-
-        command.Arguments.Add(new SimpleArgument(message ?? string.Empty));
+       
+        var addCommandImplementationResult = interpreter.AddCommandImplementation(putsCommandName, new PutsCommand(interpreter));
         
-        return interpreter.AddCommand(command);
+        return addCommandImplementationResult.IsSuccess == false
+            ? SimpleResult.Error(addCommandImplementationResult.Message)
+            : SimpleResult.Ok($"The '{putsCommandName}' command implementation added successfully.");
     }
 }

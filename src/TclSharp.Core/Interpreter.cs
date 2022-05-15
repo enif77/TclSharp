@@ -12,19 +12,10 @@ public class Interpreter : IInterpreter
     {
         Output = output ?? throw new ArgumentNullException(nameof(output));
 
-        _commands = new List<ICommand>();
         _commandImplementations = new Dictionary<string, ICommandImplementation>();
     }
 
-
-    public IResult<ICommand> AddCommand(ICommand command)
-    {
-        _commands.Add(command);
-
-        return Result<ICommand>.Ok(command, $"The '{command.Name}' command added.");
-    }
-
-
+    
     public bool IsKnownCommand(string commandName)
     {
         return _commandImplementations.ContainsKey(commandName);
@@ -44,10 +35,12 @@ public class Interpreter : IInterpreter
     }
 
     
-    public IResult<string> Execute()
+    public IResult<string> Execute(IScript script)
     {
+        if (script == null) throw new ArgumentNullException(nameof(script));
+        
         var lastResult = Result<string>.Ok();
-        foreach (var command in _commands)
+        foreach (var command in script.Commands)
         {
             if (_commandImplementations.ContainsKey(command.Name) == false)
             {
@@ -66,7 +59,6 @@ public class Interpreter : IInterpreter
         return lastResult;
     }
 
-
-    private readonly List<ICommand> _commands;
+    
     private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
 }

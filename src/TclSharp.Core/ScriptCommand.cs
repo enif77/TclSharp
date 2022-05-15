@@ -6,7 +6,7 @@ namespace TclSharp.Core;
 /// <summary>
 /// A basic command implementation.
 /// </summary>
-public class Command : ICommand
+public class ScriptCommand : IScriptCommand
 {
     public string Name { get; }
 
@@ -17,7 +17,7 @@ public class Command : ICommand
     /// Constructor.
     /// </summary>
     /// <param name="name">A command name.</param>
-    public Command(string name)
+    public ScriptCommand(string name)
     {
         Name = name;
         Arguments = new List<ICommandArgument>();
