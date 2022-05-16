@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.2");
+Console.WriteLine("TclSharp v0.0.3");
 
 var script = new Script();
 

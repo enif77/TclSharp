@@ -162,7 +162,7 @@ public class Interpreter : IInterpreter
         {
             if (_commandImplementations.ContainsKey(command.Name) == false)
             {
-                return Result<string>.Error($"The '{command.Name}' not defined.");
+                return Result<string>.Error($"The '{command.Name}' command is not defined.");
             }
 
             var commandImplementation = _commandImplementations[command.Name];
