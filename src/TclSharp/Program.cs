@@ -27,6 +27,9 @@ script.AddPutsCommand("test1 = $test1");
 script.AddPutsCommand("test2 = $test2");
 script.AddPutsCommand("test3 = $test3");
 
+script.AddPutsCommand("test4 = ${test}3");
+script.AddPutsCommand("test5 = ${a}test3");
+
 
 var interpreter = new Interpreter(
     new ConsoleOutputWriter());

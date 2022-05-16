@@ -30,29 +30,14 @@ public class SimpleArgument : ICommandArgument
         {
             if (c == '$')
             {
-                c = reader.NextChar();
-                if (c == 0)
+                var extractVariableNameResult = ExtractVariableName(reader);
+                if (extractVariableNameResult.IsSuccess == false)
                 {
-                    return Result<string>.Error("Unexpected '$' at the end of the string.");
+                    return extractVariableNameResult;
                 }
-                
-                var nameSb = new StringBuilder();
-                
-                // $name = $A-Z,a-z,0-9,_
-                while (c != 0)
-                {
-                    if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
-                    {
-                        nameSb.Append(c);
-                        c = reader.NextChar();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                
-                sb.Append(interpreter.GetVariableValue(nameSb.ToString()));
+
+                sb.Append(interpreter.GetVariableValue(extractVariableNameResult.Data!));
+                c = reader.CurrentChar;
                 
                 continue;
             }
@@ -63,6 +48,57 @@ public class SimpleArgument : ICommandArgument
 
         return Result<string>.Ok(sb.ToString(), null);
     }
+
+
+    private IResult<string> ExtractVariableName(ISourceReader reader)
+    {
+        var c = reader.NextChar();  // Eat '$' 
+        if (c == 0)
+        {
+            return Result<string>.Error("Unexpected '$' at the end of the string.");
+        }
+
+        var nameSb = new StringBuilder();
+
+        // ${name} = any-char-except '}'
+        if (c == '{')
+        {
+            c = reader.NextChar();  // Eat '{'.
+            while (c != 0)
+            {
+                if (c == '}')
+                {
+                    reader.NextChar();
+                    
+                    break;
+                }
+
+                nameSb.Append(c);
+                c = reader.NextChar();
+            }
+        }
+        else
+        {
+            // $name = $A-Z,a-z,0-9,_
+            while (c != 0)
+            {
+                if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
+                {
+                    nameSb.Append(c);
+                    c = reader.NextChar();
+                    
+                    continue;
+                }
+
+                break;
+            }
+        }
+        
+        return (nameSb.Length == 0)
+            ? Result<string>.Error("A variable name expected.")
+            : Result<string>.Ok(nameSb.ToString(), null);
+    }
+
 }
 
 // https://wiki.tcl-lang.org/page/Dodekalogue
