@@ -54,7 +54,7 @@ public class Interpreter : IInterpreter
         var reader = new StringSourceReader(value);
         
         var c = reader.NextChar();
-        while (c != 0)
+        while (c >= 0)
         {
             if (c == '$')
             {
@@ -70,7 +70,7 @@ public class Interpreter : IInterpreter
                 continue;
             }
 
-            sb.Append(c);
+            sb.Append((char)c);
             c = reader.NextChar();
         }
 
@@ -81,7 +81,7 @@ public class Interpreter : IInterpreter
     private IResult<string> ExtractVariableName(ISourceReader reader)
     {
         var c = reader.NextChar();  // Eat '$' 
-        if (c == 0)
+        if (c < 0)
         {
             return Result<string>.Error("Unexpected '$' at the end of the string.");
         }
@@ -92,7 +92,7 @@ public class Interpreter : IInterpreter
         if (c == '{')
         {
             c = reader.NextChar();  // Eat '{'.
-            while (c != 0)
+            while (c >= 0)
             {
                 if (c == '}')
                 {
@@ -101,18 +101,18 @@ public class Interpreter : IInterpreter
                     break;
                 }
 
-                nameSb.Append(c);
+                nameSb.Append((char)c);
                 c = reader.NextChar();
             }
         }
         else
         {
             // $name = $A-Z,a-z,0-9,_
-            while (c != 0)
+            while (c >= 0)
             {
                 if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
                 {
-                    nameSb.Append(c);
+                    nameSb.Append((char)c);
                     c = reader.NextChar();
                     
                     continue;

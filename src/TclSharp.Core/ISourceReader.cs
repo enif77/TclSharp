@@ -17,6 +17,6 @@ public interface ISourceReader
     /// <summary>
     /// Reads the next character from the input.
     /// </summary>
-    /// <returns>The next character from the input or 0 at the end of the source.</returns>
-    char NextChar();
+    /// <returns>The next character from the input or -1 (EOF) at the end of the source.</returns>
+    int NextChar();
 }

@@ -20,7 +20,7 @@ public class StringSourceReader_Tests
     {
         var r = new StringSourceReader(string.Empty);
 
-        Assert.Equal(0, r.NextChar());
+        Assert.Equal(-1, r.NextChar());
     }
     
     [Fact]
@@ -32,9 +32,9 @@ public class StringSourceReader_Tests
     }
     
     [Fact]
-    public void NextCharReturnsSourceChar()
+    public void FirstNextCharReturnsFirstSourceChar()
     {
-        var r = new StringSourceReader("test");
+        var r = new StringSourceReader("tx");
 
         Assert.Equal('t', r.NextChar());
     }
@@ -42,7 +42,7 @@ public class StringSourceReader_Tests
     [Fact]
     public void CurrentCharIsSetByNextChar()
     {
-        var r = new StringSourceReader("test");
+        var r = new StringSourceReader("tx");
 
         var c = r.NextChar();
         
@@ -50,24 +50,24 @@ public class StringSourceReader_Tests
     }
     
     [Fact]
-    public void CurrentCharIsZeroWhenAllCharsAreRead()
+    public void CurrentCharRemainsTheLastCharWhenAllCharsAreRead()
     {
-        var r = new StringSourceReader("t");
+        var r = new StringSourceReader("tx");
 
-        Assert.NotEqual(0, r.NextChar());  // 't'
+        Assert.Equal('t', r.NextChar());
         
-        r.NextChar();
+        r.NextChar();  // x 
+        r.NextChar();  // -1
         
-        Assert.Equal(0, r.CurrentChar);    // 0
+        Assert.Equal('x', r.CurrentChar);
     }
     
     [Fact]
-    public void NextCharReturnsZeroWhenAllCharsAreRead()
+    public void NextCharReturnsLessThanZeroWhenAllCharsAreRead()
     {
         var r = new StringSourceReader("t");
 
-        Assert.NotEqual(0, r.NextChar());  // 't'
-        
-        Assert.Equal(0, r.NextChar());     // 0
+        Assert.Equal('t', r.NextChar());
+        Assert.Equal(-1, r.NextChar());
     }
 }

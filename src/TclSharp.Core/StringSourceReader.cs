@@ -18,7 +18,7 @@ public class StringSourceReader : ISourceReader
     }
 
 
-    public char NextChar()
+    public int NextChar()
     {
         _sourcePosition++;
         if (_sourcePosition < _src.Length)
@@ -28,7 +28,7 @@ public class StringSourceReader : ISourceReader
         
         _sourcePosition = _src.Length;
 
-        return CurrentChar = (char)0;
+        return -1;
     }
 
 
