@@ -19,9 +19,9 @@ script.AddSetCommand("test");
 
 script.AddPutsCommand("The test value is '$test'");
 
-script.AddSetCommand("test1", "$test");
-script.AddSetCommand("test2", "$test1 + $test");
-script.AddSetCommand("test3", "$test2 + $test");
+script.AddSetCommand("test1", "1: $test");
+script.AddSetCommand("test2", "2: $test1 + $test");
+script.AddSetCommand("test3", "3: $test2 + $test");
 
 script.AddPutsCommand("test1 = $test1");
 script.AddPutsCommand("test2 = $test2");

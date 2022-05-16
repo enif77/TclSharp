@@ -23,43 +23,42 @@ public class SimpleArgument : ICommandArgument
     {
         var sb = new StringBuilder(Value.Length);
 
-        var i = 0;
-        while (i < Value.Length)
+        var reader = new StringSourceReader(Value);
+        
+        var c = reader.NextChar();
+        while (c != 0)
         {
-            var c = Value[i];
-
             if (c == '$')
             {
-                i++;
-                if (i >= Value.Length)
+                c = reader.NextChar();
+                if (c == 0)
                 {
                     return Result<string>.Error("Unexpected '$' at the end of the string.");
                 }
-
+                
                 var nameSb = new StringBuilder();
                 
                 // $name = $A-Z,a-z,0-9,_
-                while (i < Value.Length)
+                while (c != 0)
                 {
-                    c = Value[i];
                     if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
                     {
                         nameSb.Append(c);
-                        i++;
+                        c = reader.NextChar();
                     }
                     else
                     {
                         break;
                     }
                 }
-
+                
                 sb.Append(interpreter.GetVariableValue(nameSb.ToString()));
+                
+                continue;
             }
-            else
-            {
-                sb.Append(c);
-                i++;
-            }
+
+            sb.Append(c);
+            c = reader.NextChar();
         }
 
         return Result<string>.Ok(sb.ToString(), null);
