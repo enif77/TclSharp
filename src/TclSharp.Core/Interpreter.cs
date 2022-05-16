@@ -1,5 +1,7 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
+using System.Text;
+
 namespace TclSharp.Core;
 
 
@@ -41,6 +43,95 @@ public class Interpreter : IInterpreter
     #endregion
     
     
+    #region command arguments
+
+    public IResult<string> ProcessArgumentValue(ICommandArgument argument)
+    {
+        var value = argument.Value;
+        
+        var sb = new StringBuilder(value.Length);
+
+        var reader = new StringSourceReader(value);
+        
+        var c = reader.NextChar();
+        while (c != 0)
+        {
+            if (c == '$')
+            {
+                var extractVariableNameResult = ExtractVariableName(reader);
+                if (extractVariableNameResult.IsSuccess == false)
+                {
+                    return extractVariableNameResult;
+                }
+
+                sb.Append(GetVariableValue(extractVariableNameResult.Data!));
+                c = reader.CurrentChar;
+                
+                continue;
+            }
+
+            sb.Append(c);
+            c = reader.NextChar();
+        }
+
+        return Result<string>.Ok(sb.ToString(), null);
+    }
+
+    
+    private IResult<string> ExtractVariableName(ISourceReader reader)
+    {
+        var c = reader.NextChar();  // Eat '$' 
+        if (c == 0)
+        {
+            return Result<string>.Error("Unexpected '$' at the end of the string.");
+        }
+
+        var nameSb = new StringBuilder();
+
+        // ${name} = any-char-except '}'
+        if (c == '{')
+        {
+            c = reader.NextChar();  // Eat '{'.
+            while (c != 0)
+            {
+                if (c == '}')
+                {
+                    reader.NextChar();
+                    
+                    break;
+                }
+
+                nameSb.Append(c);
+                c = reader.NextChar();
+            }
+        }
+        else
+        {
+            // $name = $A-Z,a-z,0-9,_
+            while (c != 0)
+            {
+                if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
+                {
+                    nameSb.Append(c);
+                    c = reader.NextChar();
+                    
+                    continue;
+                }
+
+                break;
+            }
+        }
+        
+        return (nameSb.Length == 0)
+            ? Result<string>.Error("A variable name expected.")
+            : Result<string>.Ok(nameSb.ToString(), null);
+    }
+    
+    #endregion
+    
+    
+    #region commands
+    
     public bool IsKnownCommand(string commandName)
     {
         return _commandImplementations.ContainsKey(commandName);
@@ -58,6 +149,8 @@ public class Interpreter : IInterpreter
 
         return Result<ICommandImplementation>.Ok(commandImplementation, $"The '{commandName}' command implementation added.");
     }
+    
+    #endregion
 
     
     public IResult<string> Execute(IScript script)

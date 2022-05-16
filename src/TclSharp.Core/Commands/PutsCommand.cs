@@ -34,7 +34,7 @@ public class PutsCommand : ICommandImplementation
         string message;
         
         var firstArgument = scriptCommand.Arguments[0];
-        var getFirstArgumentValueResult = firstArgument.GetProcessedValue(_interpreter);
+        var getFirstArgumentValueResult = _interpreter.ProcessArgumentValue(firstArgument);
         if (getFirstArgumentValueResult.IsSuccess == false)
         {
             return Result<string>.Error(firstArgument.Value, getFirstArgumentValueResult.Message);
@@ -51,7 +51,7 @@ public class PutsCommand : ICommandImplementation
             }
 
             var secondArgument = scriptCommand.Arguments[1];
-            var getSecondArgumentValueResult = secondArgument.GetProcessedValue(_interpreter);
+            var getSecondArgumentValueResult = _interpreter.ProcessArgumentValue(secondArgument);
             if (getSecondArgumentValueResult.IsSuccess == false)
             {
                 return Result<string>.Error(secondArgument.Value, getSecondArgumentValueResult.Message);

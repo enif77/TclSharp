@@ -5,6 +5,7 @@ A TCL implementation for .NET in C#.
 ## Links
 
 * https://zetcode.com/lang/tcl/lexis/
+* https://wiki.tcl-lang.org/page/Dodekalogue
 * https://www.tcl.tk/man/tcl/TclCmd/contents.html
 
 ## Implemented Commands

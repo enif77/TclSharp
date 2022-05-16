@@ -13,6 +13,7 @@ public interface IInterpreter
     /// </summary>
     IOutputWriter Output { get; }
     
+    
     #region variables
 
     /// <summary>
@@ -39,6 +40,20 @@ public interface IInterpreter
     
     #endregion
 
+    
+    #region command arguments
+
+    /// <summary>
+    /// Substitutes variables and commands in a command argument.
+    /// </summary>
+    /// <param name="argument">A command arguments.</param>
+    /// <returns>Processed command argument.</returns>
+    IResult<string> ProcessArgumentValue(ICommandArgument argument);
+
+    #endregion
+    
+
+    #region commands
 
     /// <summary>
     /// Checks, if a command implementation exists.
@@ -54,6 +69,9 @@ public interface IInterpreter
     /// <param name="commandImplementation">A command implementation.</param>
     /// <returns>An IResult instance with the added command instance.</returns>
     IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation);
+
+    #endregion
+    
 
     /// <summary>
     /// Executes all commands in this instance.

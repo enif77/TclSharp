@@ -12,12 +12,4 @@ public interface ICommandArgument
     /// An unprocessed argument value.
     /// </summary>
     string Value { get; }
-
-
-    /// <summary>
-    /// Gets a processed value.
-    /// </summary>
-    /// <param name="interpreter">An interpreter with shared values/state.</param>
-    /// <returns>A processed value.</returns>
-    IResult<string> GetProcessedValue(IInterpreter interpreter);
 }
