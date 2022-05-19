@@ -8,7 +8,7 @@ namespace TclSharp.Core;
 /// </summary>
 public class StringSourceReader : ISourceReader
 {
-    public char CurrentChar { get; private set; }
+    public int CurrentChar { get; private set; }
 
 
     public StringSourceReader(string src)
@@ -28,7 +28,7 @@ public class StringSourceReader : ISourceReader
         
         _sourcePosition = _src.Length;
 
-        return -1;
+        return CurrentChar = -1;
     }
 
 

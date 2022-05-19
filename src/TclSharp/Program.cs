@@ -41,3 +41,33 @@ var result = interpreter.Execute(script);
 
 Console.WriteLine("---");
 Console.WriteLine("{0}: {1}", result.Message, result.Data);
+
+Console.WriteLine("---");
+
+var tokenizer = new Tokenizer(new StringSourceReader("  word1 $word2 \nword3;word4;;word5;"));
+//var tokenizer = new Tokenizer(new StringSourceReader("word1"));
+
+var token = tokenizer.NextToken();
+while (token.Code != TokenCode.Eof)
+{
+    switch (token.Code)
+    {
+        case TokenCode.Word:
+            Console.WriteLine("word: {0}", token.StringValue);
+            break;
+        
+        case TokenCode.CommandSeparator:
+            Console.WriteLine("command separator");
+            break;
+        
+        case TokenCode.Unknown:
+            Console.WriteLine("UNKNOWN");
+            break;
+    }
+
+    token = tokenizer.NextToken();
+}
+
+Console.WriteLine("---");
+
+Console.WriteLine("DONE");

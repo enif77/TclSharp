@@ -50,19 +50,6 @@ public class StringSourceReader_Tests
     }
     
     [Fact]
-    public void CurrentCharRemainsTheLastCharWhenAllCharsAreRead()
-    {
-        var r = new StringSourceReader("tx");
-
-        Assert.Equal('t', r.NextChar());
-        
-        r.NextChar();  // x 
-        r.NextChar();  // -1
-        
-        Assert.Equal('x', r.CurrentChar);
-    }
-    
-    [Fact]
     public void NextCharReturnsLessThanZeroWhenAllCharsAreRead()
     {
         var r = new StringSourceReader("t");

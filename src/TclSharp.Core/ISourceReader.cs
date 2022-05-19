@@ -11,7 +11,7 @@ public interface ISourceReader
     /// <summary>
     /// The last read (the current) character.
     /// </summary>
-    char CurrentChar { get; }
+    int CurrentChar { get; }
     
     
     /// <summary>

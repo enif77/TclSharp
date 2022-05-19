@@ -19,6 +19,11 @@ public enum TokenCode
     Eof,
     
     /// <summary>
+    /// '\n' or ';'.
+    /// </summary>
+    CommandSeparator,
+    
+    /// <summary>
     /// A word (a command name or argument).
     /// </summary>
     Word
