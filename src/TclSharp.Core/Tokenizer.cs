@@ -76,12 +76,12 @@ public class Tokenizer : ITokenizer
                         return ErrorToken("Unexpected braced word start character '{' found.");
                     }
 
-                    var extractBracedWordResult = ExtractBracedWord();
-                    if (extractBracedWordResult.IsSuccess == false)
+                    var extractBracketedWordResult = ExtractBracketedWord();
+                    if (extractBracketedWordResult.IsSuccess == false)
                     {
-                        return ErrorToken(extractBracedWordResult.Message);
+                        return ErrorToken(extractBracketedWordResult.Message);
                     }
-                    return CurrentToken = WordToken(extractBracedWordResult.Data!);
+                    return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                 
                 default:
                     wordSb ??= new StringBuilder();
@@ -139,24 +139,24 @@ public class Tokenizer : ITokenizer
     }
     
     
-    private IResult<string> ExtractBracedWord()
+    private IResult<string> ExtractBracketedWord()
     {
         var wordSb = new StringBuilder();
 
-        var braceLevel = 1;
+        var bracketLevel = 1;
         var c = _reader.NextChar();
         while (c >= 0)
         {
             switch (c)
             {
                 case '{':
-                    braceLevel++;
+                    bracketLevel++;
                     break;
                 
                 case '}':
                 {
-                    braceLevel--;
-                    if (braceLevel == 0)
+                    bracketLevel--;
+                    if (bracketLevel == 0)
                     {
                         _reader.NextChar();
         
@@ -171,6 +171,6 @@ public class Tokenizer : ITokenizer
             c = _reader.NextChar();
         }
 
-        return Result<string>.Error("The braced word end character '}' expected.");
+        return Result<string>.Error("The bracketed word end character '}' expected.");
     }
 }
