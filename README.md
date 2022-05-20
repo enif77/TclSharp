@@ -13,3 +13,28 @@ A TCL implementation for .NET in C#.
 * puts - puts a message to an output.
 * set - sets a variable to a value.
 
+
+## Syntax
+
+### Tokens
+
+* EoF - An end of file/source indicator.
+* CommandSeparator - A new line or semicolon.
+* Word - A command name or argument.
+
+### BNF
+
+````
+script :: [ commands ] EoF .
+commands :: command [ command-separator command ] .
+command-separator :: '\n' | ';' .
+command :: command-name [ command-arguments ] .
+command-name :: 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' .
+command-arguments :: word [ white-space word ] .
+word :: any char but white-space or command-separator .
+white-space :: any white space char bur '\n' .
+````
+
+Note: A command can be empty, so multiple command separators in a row are allowed. 
+
+Note2: A command name must start with a letter or an underscore.
