@@ -12,8 +12,10 @@ TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
 TestTokenizer("word3;word4");
 TestTokenizer("word1");
 
-Console.WriteLine("DONE");
+TestParser("");
+TestParser("puts hello");
 
+Console.WriteLine("DONE");
 
 
 void TestInterpreter()
@@ -92,5 +94,18 @@ void TestTokenizer(string source)
         ? "EOF"
         : "EOF expected!");
 
+    Console.WriteLine("---");
+}
+
+
+void TestParser(string source)
+{
+    var parser = new Parser();
+
+    var parseResult = parser.Parse(new StringSourceReader(source));
+    Console.WriteLine((parseResult.IsSuccess)
+        ? "Parsing of '{0}' {1}."
+        : "Parsing of '{0}' failed with error: {1}", source, parseResult.Message);
+    
     Console.WriteLine("---");
 }
