@@ -32,7 +32,7 @@ command :: command-name { command-arguments } .
 command-name :: 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' .
 command-arguments :: word { white-space word } .
 word :: any char but white-space or command-separator .
-white-space :: any white space char bur '\n' .
+white-space :: any white space char but '\n' .
 ````
 
 Note: A command can be empty, so multiple command separators in a row are allowed. 
