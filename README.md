@@ -26,11 +26,11 @@ A TCL implementation for .NET in C#.
 
 ````
 script :: [ commands ] EoF .
-commands :: command [ command-separator command ] .
+commands :: command { command-separator command } .
 command-separator :: '\n' | ';' .
-command :: command-name [ command-arguments ] .
+command :: command-name { command-arguments } .
 command-name :: 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' .
-command-arguments :: word [ white-space word ] .
+command-arguments :: word { white-space word } .
 word :: any char but white-space or command-separator .
 white-space :: any white space char bur '\n' .
 ````

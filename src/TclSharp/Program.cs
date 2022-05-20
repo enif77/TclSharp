@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.3");
+Console.WriteLine("TclSharp v0.0.5");
 
 TestInterpreter();
 
@@ -13,7 +13,9 @@ TestTokenizer("word3;word4");
 TestTokenizer("word1");
 
 TestParser("");
+TestParser("puts");
 TestParser("puts hello");
+TestParser("set msg hello; puts $msg");
 
 Console.WriteLine("DONE");
 
@@ -103,9 +105,28 @@ void TestParser(string source)
     var parser = new Parser();
 
     var parseResult = parser.Parse(new StringSourceReader(source));
-    Console.WriteLine((parseResult.IsSuccess)
-        ? "Parsing of '{0}' {1}."
-        : "Parsing of '{0}' failed with error: {1}", source, parseResult.Message);
+    if (parseResult.IsSuccess == false)
+    {
+        Console.WriteLine("Parsing of '{0}' failed with the '{1}' error.", source, parseResult.Message);
+        
+        return;
+    }
+
+    Console.WriteLine("Parsing of '{0}' {1}.", source, parseResult.Message);
+    
+    Console.WriteLine("...");
+    
+    var interpreter = new Interpreter(
+        new ConsoleOutputWriter());
+
+    interpreter.AddPutsCommand();
+    interpreter.AddSetCommand();
+
+    var executeResult = interpreter.Execute(parseResult.Data!);
+    Console.WriteLine((executeResult.IsSuccess)
+        ? "Execution succeeded with message '{0}'."
+        : "Executing failed with the '{0}' error.",
+        executeResult.Message);
     
     Console.WriteLine("---");
 }
