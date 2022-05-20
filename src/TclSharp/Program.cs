@@ -12,10 +12,16 @@ TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
 TestTokenizer("word3;word4");
 TestTokenizer("word1");
 
-TestParser("");
-TestParser("puts");
 TestParser("puts hello");
 TestParser("set msg hello; puts $msg");
+
+const string scriptsFolderPath = "../../../../../scripts/";
+
+TestParser(File.ReadAllText(scriptsFolderPath + "empty.tcl"));
+TestParser(File.ReadAllText(scriptsFolderPath + "hello.tcl"));
+TestParser(File.ReadAllText(scriptsFolderPath + "hello-variable.tcl"));
+TestParser(File.ReadAllText(scriptsFolderPath + "puts-nonewline.tcl"));
+
 
 Console.WriteLine("DONE");
 
