@@ -12,10 +12,9 @@ public class Tokenizer : ITokenizer
 
     public Tokenizer(ISourceReader reader)
     {
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         CurrentToken = _eofToken;
         
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-
         _reader.NextChar();
     }
 
@@ -59,12 +58,30 @@ public class Tokenizer : ITokenizer
                     return CurrentToken = WordToken(wordSb.ToString());
 
                 case '"':
-                    var extractQuotedStringResult = ExtractQuotedString();
-                    if (extractQuotedStringResult.IsSuccess == false)
+                    if (wordSb != null)
                     {
-                        return new Token(TokenCode.Unknown, extractQuotedStringResult.Message);
+                        return ErrorToken("Unexpected quoted word start character '\"' found.");
                     }
-                    return CurrentToken = WordToken(extractQuotedStringResult.Data!);
+
+                    var extractQuotedWordResult = ExtractQuotedWord();
+                    if (extractQuotedWordResult.IsSuccess == false)
+                    {
+                        return ErrorToken(extractQuotedWordResult.Message);
+                    }
+                    return CurrentToken = WordToken(extractQuotedWordResult.Data!);
+                
+                case '{':
+                    if (wordSb != null)
+                    {
+                        return ErrorToken("Unexpected braced word start character '{' found.");
+                    }
+
+                    var extractBracedWordResult = ExtractBracedWord();
+                    if (extractBracedWordResult.IsSuccess == false)
+                    {
+                        return ErrorToken(extractBracedWordResult.Message);
+                    }
+                    return CurrentToken = WordToken(extractBracedWordResult.Data!);
                 
                 default:
                     wordSb ??= new StringBuilder();
@@ -94,11 +111,14 @@ public class Tokenizer : ITokenizer
 
     private static IToken WordToken(string word)
         => new Token(TokenCode.Word, word);
+    
+    private static IToken ErrorToken(string msg)
+        => new Token(TokenCode.Unknown, msg);
 
 
-    private IResult<string> ExtractQuotedString()
+    private IResult<string> ExtractQuotedWord()
     {
-        var stringSb = new StringBuilder();
+        var wordSb = new StringBuilder();
         
         var c = _reader.NextChar();
         while (c >= 0)
@@ -107,14 +127,50 @@ public class Tokenizer : ITokenizer
             {
                 _reader.NextChar();
         
-                return Result<string>.Ok(stringSb.ToString(), null);
+                return Result<string>.Ok(wordSb.ToString(), null);
             }
 
-            stringSb.Append((char) c);
+            wordSb.Append((char) c);
             
             c = _reader.NextChar();
         }
 
-        return Result<string>.Error("A quoted string end character '\"' expected.");
+        return Result<string>.Error("The quoted word end character '\"' expected.");
+    }
+    
+    
+    private IResult<string> ExtractBracedWord()
+    {
+        var wordSb = new StringBuilder();
+
+        var braceLevel = 1;
+        var c = _reader.NextChar();
+        while (c >= 0)
+        {
+            switch (c)
+            {
+                case '{':
+                    braceLevel++;
+                    break;
+                
+                case '}':
+                {
+                    braceLevel--;
+                    if (braceLevel == 0)
+                    {
+                        _reader.NextChar();
+        
+                        return Result<string>.Ok(wordSb.ToString(), null);
+                    }
+                    break;
+                }
+            }
+
+            wordSb.Append((char) c);
+            
+            c = _reader.NextChar();
+        }
+
+        return Result<string>.Error("The braced word end character '}' expected.");
     }
 }
