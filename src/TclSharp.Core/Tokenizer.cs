@@ -76,7 +76,7 @@ public class Tokenizer : ITokenizer
     
     
     private readonly ISourceReader _reader;
-    private readonly IToken _eofToken = new Token(TokenCode.Eof);
+    private readonly IToken _eofToken = new Token(TokenCode.EoF);
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
 

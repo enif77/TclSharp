@@ -49,7 +49,7 @@ var tokenizer = new Tokenizer(new StringSourceReader("  word1 $word2 \nword3;wor
 //var tokenizer = new Tokenizer(new StringSourceReader("word1"));
 
 var token = tokenizer.NextToken();
-while (token.Code != TokenCode.Eof)
+while (token.Code != TokenCode.EoF)
 {
     switch (token.Code)
     {
@@ -73,7 +73,7 @@ while (token.Code != TokenCode.Eof)
     token = tokenizer.NextToken();
 }
 
-Console.WriteLine(token.Code == TokenCode.Eof
+Console.WriteLine(token.Code == TokenCode.EoF
     ? "EOF"
     : "cEOF expected!");
 

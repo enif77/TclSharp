@@ -16,7 +16,7 @@ public enum TokenCode
     /// <summary>
     /// The end of file (source).
     /// </summary>
-    Eof,
+    EoF,
     
     /// <summary>
     /// '\n' or ';'.
