@@ -19,6 +19,7 @@ const string scriptsFolderPath = "../../../../../scripts/";
 
 TestParser(File.ReadAllText(scriptsFolderPath + "empty.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "hello.tcl"));
+TestParser(File.ReadAllText(scriptsFolderPath + "hello-world.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "hello-variable.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "puts-nonewline.tcl"));
 

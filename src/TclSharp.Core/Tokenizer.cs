@@ -57,7 +57,15 @@ public class Tokenizer : ITokenizer
                     }
                     // A command separator finishes a word extracting.
                     return CurrentToken = WordToken(wordSb.ToString());
-                    
+
+                case '"':
+                    var extractQuotedStringResult = ExtractQuotedString();
+                    if (extractQuotedStringResult.IsSuccess == false)
+                    {
+                        return new Token(TokenCode.Unknown, extractQuotedStringResult.Message);
+                    }
+                    return CurrentToken = WordToken(extractQuotedStringResult.Data!);
+                
                 default:
                     wordSb ??= new StringBuilder();
                     wordSb.Append((char) c);
@@ -86,4 +94,27 @@ public class Tokenizer : ITokenizer
 
     private static IToken WordToken(string word)
         => new Token(TokenCode.Word, word);
+
+
+    private IResult<string> ExtractQuotedString()
+    {
+        var stringSb = new StringBuilder();
+        
+        var c = _reader.NextChar();
+        while (c >= 0)
+        {
+            if (c == '"')
+            {
+                _reader.NextChar();
+        
+                return Result<string>.Ok(stringSb.ToString(), null);
+            }
+
+            stringSb.Append((char) c);
+            
+            c = _reader.NextChar();
+        }
+
+        return Result<string>.Error("A quoted string end character '\"' expected.");
+    }
 }
