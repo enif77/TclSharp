@@ -10,6 +10,13 @@ public class ConsoleOutputWriter : IOutputWriter
 {
     public void Write(string format, params object[] arg)
     {
+        if (arg.Length == 0)
+        {
+            format = format
+                .Replace("{", "{{")
+                .Replace("}", "}}");
+        }
+
         Console.Write(format, arg);
     }
 
@@ -22,6 +29,13 @@ public class ConsoleOutputWriter : IOutputWriter
 
     public void WriteLine(string format, params object[] arg)
     {
+        if (arg.Length == 0)
+        {
+            format = format
+                .Replace("{", "{{")
+                .Replace("}", "}}");
+        }
+        
         Console.WriteLine(format, arg);
     }
 }
