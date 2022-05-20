@@ -80,10 +80,10 @@ public class Tokenizer : ITokenizer
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
 
-    private bool IsWhiteSpace(int c)
+    private static bool IsWhiteSpace(int c)
         => c != '\n' && char.IsWhiteSpace((char)c);
 
 
-    private IToken WordToken(string word)
-        => CurrentToken = new Token(TokenCode.Word, word);
+    private static IToken WordToken(string word)
+        => new Token(TokenCode.Word, word);
 }
