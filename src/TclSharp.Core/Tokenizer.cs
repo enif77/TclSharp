@@ -32,7 +32,7 @@ public class Tokenizer : ITokenizer
             {
                 if (wordSb == null)
                 {
-                    c = _reader.NextChar();
+                    c = NextChar();
                 
                     continue;
                 }
@@ -49,7 +49,7 @@ public class Tokenizer : ITokenizer
                     if (wordSb == null)
                     {
                         // No, so consume the command separator char...
-                        _reader.NextChar();
+                        NextChar();
                         
                         // and return the EofC token.
                         return CurrentToken = _commandSeparatorToken;
@@ -104,6 +104,43 @@ public class Tokenizer : ITokenizer
     private readonly IToken _eofToken = new Token(TokenCode.EoF);
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
+    private int _nextChar = -1;
+
+    private int NextChar()
+    {
+        if (_nextChar >= 0)
+        {
+            var nextChar = _nextChar;
+            _nextChar = -1;
+
+            return nextChar;
+        }
+
+        var c = _reader.NextChar();
+        if (c != '\\')
+        {
+            return c;
+        }
+
+        c = _reader.NextChar();
+        if (c != '\n')
+        {
+            _nextChar = c;
+
+            return '\\';
+        }
+
+        c = _reader.NextChar();
+        while (IsWhiteSpace(c))
+        {
+            c = _reader.NextChar();
+        }
+
+        _nextChar = c;
+
+        return ' ';
+    }
+
 
     private static bool IsWhiteSpace(int c)
         => c != '\n' && char.IsWhiteSpace((char)c);
@@ -120,19 +157,19 @@ public class Tokenizer : ITokenizer
     {
         var wordSb = new StringBuilder();
         
-        var c = _reader.NextChar();
+        var c = NextChar();
         while (c >= 0)
         {
             if (c == '"')
             {
-                _reader.NextChar();
+                NextChar();
         
                 return Result<string>.Ok(wordSb.ToString(), null);
             }
 
             wordSb.Append((char) c);
             
-            c = _reader.NextChar();
+            c = NextChar();
         }
 
         return Result<string>.Error("The quoted word end character '\"' expected.");
@@ -144,11 +181,20 @@ public class Tokenizer : ITokenizer
         var wordSb = new StringBuilder();
 
         var bracketLevel = 1;
-        var c = _reader.NextChar();
+        var c = NextChar();
         while (c >= 0)
         {
             switch (c)
             {
+                case '\\':
+                    var escapeBracketedCharResult = EscapeBracketedChar();
+                    if (escapeBracketedCharResult.IsSuccess == false)
+                    {
+                        return Result<string>.Error(escapeBracketedCharResult.Message);
+                    }
+                    c = escapeBracketedCharResult.Data;
+                    break;
+                
                 case '{':
                     bracketLevel++;
                     break;
@@ -158,7 +204,7 @@ public class Tokenizer : ITokenizer
                     bracketLevel--;
                     if (bracketLevel == 0)
                     {
-                        _reader.NextChar();
+                        NextChar();
         
                         return Result<string>.Ok(wordSb.ToString(), null);
                     }
@@ -168,9 +214,24 @@ public class Tokenizer : ITokenizer
 
             wordSb.Append((char) c);
             
-            c = _reader.NextChar();
+            c = NextChar();
         }
 
         return Result<string>.Error("The bracketed word end character '}' expected.");
+    }
+
+
+    private IResult<char> EscapeBracketedChar()
+    {
+        var c = NextChar();
+        switch (c)
+        {
+            case '{':
+            case '}':
+                return Result<char>.Ok((char)c);
+            
+            default:
+                return Result<char>.Error($"Unsupported escaped character '{(char)c}' in bracketed word.");
+        }
     }
 }
