@@ -15,6 +15,7 @@ public class StringSourceReader : ISourceReader
     {
         _src = src ?? throw new ArgumentNullException(nameof(src));
         _sourcePosition = -1;
+        CurrentChar = -1;
     }
 
 

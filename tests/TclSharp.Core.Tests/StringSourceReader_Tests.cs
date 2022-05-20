@@ -24,11 +24,11 @@ public class StringSourceReader_Tests
     }
     
     [Fact]
-    public void CurrentCharIsZeroInNewInstance()
+    public void CurrentCharIsEoFInNewInstance()
     {
         var r = new StringSourceReader("test");
 
-        Assert.Equal(0, r.CurrentChar);
+        Assert.Equal(-1, r.CurrentChar);
     }
     
     [Fact]
@@ -50,7 +50,7 @@ public class StringSourceReader_Tests
     }
     
     [Fact]
-    public void NextCharReturnsLessThanZeroWhenAllCharsAreRead()
+    public void NextCharReturnsEoFWhenAllCharsAreRead()
     {
         var r = new StringSourceReader("t");
 
