@@ -6,7 +6,9 @@ A TCL implementation for .NET in C#.
 
 * https://zetcode.com/lang/tcl/lexis/
 * https://wiki.tcl-lang.org/page/Dodekalogue
+* https://www.tcl-lang.org/man/tcl/TclCmd/Tcl.htm
 * https://www.tcl.tk/man/tcl/TclCmd/contents.html
+
 
 ## Implemented Commands
 
@@ -31,7 +33,10 @@ command-separator :: '\n' | ';' .
 command :: command-name { command-arguments } .
 command-name :: 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' .
 command-arguments :: word { white-space word } .
-word :: any char but white-space or command-separator .
+word :: simple-word | quoted-word | bracketed-word .
+simple-word :: any char but white-space or command-separator .
+quoted-word :: '"' { any allowed char } '"' .
+bracketed-word :: '{' any allowed char '}' .
 white-space :: any white space char but '\n' .
 ````
 
