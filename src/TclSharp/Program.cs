@@ -44,7 +44,8 @@ Console.WriteLine("{0}: {1}", result.Message, result.Data);
 
 Console.WriteLine("---");
 
-var tokenizer = new Tokenizer(new StringSourceReader("  word1 $word2 \nword3;word4;;word5;"));
+var tokenizer = new Tokenizer(new StringSourceReader("  word1 $word2 \nword3;word4;;word5;   "));
+//var tokenizer = new Tokenizer(new StringSourceReader("word3;word4"));
 //var tokenizer = new Tokenizer(new StringSourceReader("word1"));
 
 var token = tokenizer.NextToken();
@@ -63,10 +64,18 @@ while (token.Code != TokenCode.Eof)
         case TokenCode.Unknown:
             Console.WriteLine("UNKNOWN");
             break;
+        
+        default:
+            Console.WriteLine("UNIMPLEMENTED token {0} returned!", token.Code);
+            break;
     }
 
     token = tokenizer.NextToken();
 }
+
+Console.WriteLine(token.Code == TokenCode.Eof
+    ? "EOF"
+    : "cEOF expected!");
 
 Console.WriteLine("---");
 

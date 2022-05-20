@@ -24,33 +24,40 @@ public class Tokenizer : ITokenizer
     {
         StringBuilder? wordSb = null;
         
-        int c = _reader.CurrentChar;
+        // At what char we were last time?
+        var c = _reader.CurrentChar;
         while (c >= 0)
         {
+            // Skip white chars...
             if (IsWhiteSpace(c))
             {
-                if (wordSb != null)
+                if (wordSb == null)
                 {
-                    break;
+                    c = _reader.NextChar();
+                
+                    continue;
                 }
 
-                c = _reader.NextChar();
-                
-                continue;
+                // A white char ends a word. We'll return it below.
+                break;
             }
             
             switch (c)
             {
                 case '\n':
                 case ';':
+                    // Are we extracting a word now?
                     if (wordSb == null)
                     {
+                        // No, so consume the command separator char...
                         _reader.NextChar();
                         
-                        return _commandSeparatorToken;
+                        // and return the EofC token.
+                        return CurrentToken = _commandSeparatorToken;
                     }
-                    break;
-        
+                    // A command separator finishes a word extracting.
+                    return CurrentToken = WordToken(wordSb.ToString());
+                    
                 default:
                     wordSb ??= new StringBuilder();
                     wordSb.Append((char) c);
@@ -60,9 +67,11 @@ public class Tokenizer : ITokenizer
             c = _reader.NextChar();
         }
 
-        return (wordSb == null)
+        // We got here, because we are at the end of the source, 
+        // or because we just finished extracting a word.
+        return CurrentToken = (wordSb == null)
             ? _eofToken
-            : new Token(TokenCode.Word, wordSb.ToString());
+            : WordToken(wordSb.ToString());
     }
     
     
@@ -71,8 +80,10 @@ public class Tokenizer : ITokenizer
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
 
-    private static bool IsWhiteSpace(int c)
-    {
-        return c != '\n' && char.IsWhiteSpace((char)c);
-    }
+    private bool IsWhiteSpace(int c)
+        => c != '\n' && char.IsWhiteSpace((char)c);
+
+
+    private IToken WordToken(string word)
+        => CurrentToken = new Token(TokenCode.Word, word);
 }
