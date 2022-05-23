@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.6");
+Console.WriteLine("TclSharp v0.0.7");
 
 TestInterpreter();
 
@@ -12,20 +12,20 @@ TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
 TestTokenizer("word3;word4");
 TestTokenizer("word1");
 
-TestParser("puts hello");
-TestParser("set msg hello; puts $msg");
+TestParser(new StringSourceReader("puts hello"));
+TestParser(new StringSourceReader("set msg hello; puts $msg"));
 
 const string scriptsFolderPath = "../../../../../scripts/";
 
-TestParser(File.ReadAllText(scriptsFolderPath + "empty.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello-world.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello-world-braces.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello-variable.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "puts-nonewline.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello-world-nl.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "hello-world-braces-nl.tcl"));
-TestParser(File.ReadAllText(scriptsFolderPath + "braces-nl-escapes.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "empty.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-variable.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "puts-nonewline.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-nl.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-nl.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
 
 
 Console.WriteLine("DONE");
@@ -111,22 +111,18 @@ void TestTokenizer(string source)
 }
 
 
-void TestParser(string source)
+void TestParser(ISourceReader sourceReader)
 {
     var parser = new Parser();
 
-    var parseResult = parser.Parse(new StringSourceReader(source));
+    var parseResult = parser.Parse(sourceReader);
     if (parseResult.IsSuccess == false)
     {
-        Console.WriteLine("Parsing of '{0}' failed with the '{1}' error.", source, parseResult.Message);
+        Console.WriteLine("Parsing failed with the '{0}' error.", parseResult.Message);
         
         return;
     }
-
-    Console.WriteLine("Parsing of '{0}' {1}.", source, parseResult.Message);
-    
-    Console.WriteLine("...");
-    
+   
     var interpreter = new Interpreter(
         new ConsoleOutputWriter());
 
@@ -135,7 +131,7 @@ void TestParser(string source)
 
     var executeResult = interpreter.Execute(parseResult.Data!);
     Console.WriteLine((executeResult.IsSuccess)
-        ? "Execution succeeded with message '{0}'."
+        ? "-> {0}."
         : "Executing failed with the '{0}' error.",
         executeResult.Message);
     
