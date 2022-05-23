@@ -201,10 +201,22 @@ public class Tokenizer : ITokenizer
     private int EscapeQuotedWordChar(StringBuilder wordSb)
     {
         var c = NextChar();
-       
-        wordSb.Append('\\');
 
-        return c;
+        // TODO: Octal and UTF chars.
+        
+        switch (c)
+        {
+            case 'a' : return 0x7;
+            case 'b' : return 0x8;
+            case 'f' : return 0xC;
+            case 'n' : return 0xA;
+            case 'r' : return 0xD;
+            case 't' : return 0x9;
+            case 'v' : return 0xB;
+            case '\\' : return '\\';
+            
+            default: return c;
+        }
     }
     
     
