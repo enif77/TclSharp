@@ -25,7 +25,7 @@ public class Tokenizer : ITokenizer
         
         // At what char we were last time?
         var c = _reader.CurrentChar;
-        while (c >= 0)
+        while (IsEoF(c) == false)
         {
             // Skip white chars...
             if (IsWhiteSpace(c))
@@ -145,6 +145,9 @@ public class Tokenizer : ITokenizer
     }
 
 
+    private static bool IsEoF(int c)
+        => c < 0;
+    
     private static bool IsWhiteSpace(int c)
         => IsWordsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
@@ -165,7 +168,7 @@ public class Tokenizer : ITokenizer
         var wordSb = new StringBuilder();
         
         var c = NextChar();
-        while (c >= 0)
+        while (IsEoF(c) == false)
         {
             if (c == '"')
             {
@@ -189,7 +192,7 @@ public class Tokenizer : ITokenizer
 
         var bracketLevel = 1;
         var c = NextChar();
-        while (c >= 0)
+        while (IsEoF(c) == false)
         {
             switch (c)
             {
@@ -208,9 +211,9 @@ public class Tokenizer : ITokenizer
                     {
                         c = NextChar();
                         
-                        return (c < 0 || IsWordsSeparator(c) || IsWhiteSpace(c))
+                        return (IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c))
                             ? Result<string>.Ok(wordSb.ToString(), null)
-                            : Result<string>.Error("A EOF, words or commands separator expected.");
+                            : Result<string>.Error("An EoF, words or commands separator expected.");
                     }
                     break;
                 }
