@@ -10,14 +10,11 @@ public class ConsoleOutputWriter : IOutputWriter
 {
     public void Write(string format, params object[] arg)
     {
-        if (arg.Length == 0)
-        {
-            format = format
-                .Replace("{", "{{")
-                .Replace("}", "}}");
-        }
-
-        Console.Write(format, arg);
+        Console.Write(
+            (arg.Length == 0)
+                ? EscapeBraces(format)
+                : format,
+            arg);
     }
 
 
@@ -29,13 +26,16 @@ public class ConsoleOutputWriter : IOutputWriter
 
     public void WriteLine(string format, params object[] arg)
     {
-        if (arg.Length == 0)
-        {
-            format = format
-                .Replace("{", "{{")
-                .Replace("}", "}}");
-        }
-        
-        Console.WriteLine(format, arg);
+        Console.WriteLine(
+            (arg.Length == 0)
+                ? EscapeBraces(format)
+                : format,
+            arg);
     }
+    
+    
+    private static string EscapeBraces(string format)
+        => format
+            .Replace("{", "{{")
+            .Replace("}", "}}");
 }
