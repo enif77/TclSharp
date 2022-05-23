@@ -154,10 +154,19 @@ public class Tokenizer : ITokenizer
     
     private static bool IsWordsSeparator(int c)
         => c is '\n' or ';';
-    
+
+
+    private static IResult<string> CheckWordEnd(int c, StringBuilder wordSb)
+    {
+        return (IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c))
+            ? Result<string>.Ok(wordSb.ToString(), null)
+            : Result<string>.Error("An EoF, words or commands separator expected.");
+    }
+
 
     private static IToken WordToken(string word)
         => new Token(TokenCode.Word, word);
+    
     
     private static IToken ErrorToken(string msg)
         => new Token(TokenCode.Unknown, msg);
@@ -170,11 +179,14 @@ public class Tokenizer : ITokenizer
         var c = NextChar();
         while (IsEoF(c) == false)
         {
-            if (c == '"')
+            switch (c)
             {
-                NextChar();
-        
-                return Result<string>.Ok(wordSb.ToString(), null);
+                case '\\':
+                    c = EscapeQuotedWordChar(wordSb);
+                    break;
+                
+                case '"':
+                    return CheckWordEnd(NextChar(), wordSb);
             }
 
             wordSb.Append((char) c);
@@ -183,6 +195,16 @@ public class Tokenizer : ITokenizer
         }
 
         return Result<string>.Error("The quoted word end character '\"' expected.");
+    }
+    
+    
+    private int EscapeQuotedWordChar(StringBuilder wordSb)
+    {
+        var c = NextChar();
+       
+        wordSb.Append('\\');
+
+        return c;
     }
     
     
@@ -209,11 +231,7 @@ public class Tokenizer : ITokenizer
                     bracketLevel--;
                     if (bracketLevel == 0)
                     {
-                        c = NextChar();
-                        
-                        return (IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c))
-                            ? Result<string>.Ok(wordSb.ToString(), null)
-                            : Result<string>.Error("An EoF, words or commands separator expected.");
+                        return CheckWordEnd(NextChar(), wordSb);
                     }
                     break;
                 }
