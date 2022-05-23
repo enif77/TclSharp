@@ -25,7 +25,7 @@ public class PutsCommand : ICommandImplementation
     {
         if (scriptCommand == null) throw new ArgumentNullException(nameof(scriptCommand));
 
-        if (scriptCommand.Arguments.Count == 0)
+        if (scriptCommand.Arguments.Count == 1)
         {
             return Result<string>.Error("At least one argument, a message, expected.");
         }
@@ -33,7 +33,7 @@ public class PutsCommand : ICommandImplementation
         var noNewLine = false;
         string message;
         
-        var firstArgument = scriptCommand.Arguments[0];
+        var firstArgument = scriptCommand.Arguments[1];
         var getFirstArgumentValueResult = _interpreter.ProcessArgumentValue(firstArgument);
         if (getFirstArgumentValueResult.IsSuccess == false)
         {
@@ -45,12 +45,12 @@ public class PutsCommand : ICommandImplementation
         {
             noNewLine = true;
 
-            if (scriptCommand.Arguments.Count < 2)
+            if (scriptCommand.Arguments.Count < 3)
             {
                 return Result<string>.Error("The second argument, a message, expected.");
             }
 
-            var secondArgument = scriptCommand.Arguments[1];
+            var secondArgument = scriptCommand.Arguments[2];
             var getSecondArgumentValueResult = _interpreter.ProcessArgumentValue(secondArgument);
             if (getSecondArgumentValueResult.IsSuccess == false)
             {

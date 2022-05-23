@@ -12,8 +12,8 @@ TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
 TestTokenizer("word3;word4");
 TestTokenizer("word1");
 
-TestParser(new StringSourceReader("puts hello"));
-TestParser(new StringSourceReader("set msg hello; puts $msg"));
+TestParser(new StringSourceReader("puts hello-puts"));
+TestParser(new StringSourceReader("set msg hello-msg; puts $msg"));
 
 const string scriptsFolderPath = "../../../../../scripts/";
 

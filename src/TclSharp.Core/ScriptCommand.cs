@@ -4,22 +4,14 @@ namespace TclSharp.Core;
 
 
 /// <summary>
-/// A basic command implementation.
+/// A basic script command.
 /// </summary>
 public class ScriptCommand : IScriptCommand
 {
-    public string Name { get; }
+    public string Name =>
+        (Arguments.Count > 0)
+            ? Arguments[0].Value
+            : string.Empty;
 
-    public IList<ICommandArgument> Arguments { get; }
-
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="name">A command name.</param>
-    public ScriptCommand(string name)
-    {
-        Name = name;
-        Arguments = new List<ICommandArgument>();
-    }
+    public IList<ICommandArgument> Arguments { get; } = new List<ICommandArgument>();
 }

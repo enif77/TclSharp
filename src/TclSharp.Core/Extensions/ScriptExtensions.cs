@@ -19,8 +19,10 @@ public static class ScriptExtensions
     /// <returns>The added ICommand instance.</returns>
     public static IResult<IScriptCommand> AddPutsCommand(this IScript script, string? message = default, bool noNewLine = false)
     {
-        var command = new ScriptCommand("puts");
+        var command = new ScriptCommand();
 
+        command.Arguments.Add(new SimpleArgument("puts"));
+        
         if (noNewLine)
         {
             command.Arguments.Add(new SimpleArgument("-nonewline"));
@@ -40,8 +42,9 @@ public static class ScriptExtensions
     /// <returns>The added ICommand instance.</returns>
     public static IResult<IScriptCommand> AddSetCommand(this IScript script, string variableName, string? value = default)
     {
-        var command = new ScriptCommand("set");
+        var command = new ScriptCommand();
 
+        command.Arguments.Add(new SimpleArgument("set"));
         command.Arguments.Add(new SimpleArgument(variableName));
 
         if (value != null)

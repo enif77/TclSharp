@@ -65,26 +65,25 @@ public class Parser : IParser
             switch (token.Code)
             {
                 case TokenCode.Word:
-                    if (currentScriptCommand != null)
+                case TokenCode.RawWord:
+                    if (currentScriptCommand == null)
                     {
-                        currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
+                        currentScriptCommand = new ScriptCommand();
                     }
-                    else
-                    {
-                        currentScriptCommand = new ScriptCommand(token.StringValue);    
-                    }
+               
+                    currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
                     break;
                 
-                case TokenCode.RawWord:
-                    if (currentScriptCommand != null)
-                    {
-                        currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
-                    }
-                    else
-                    {
-                        currentScriptCommand = new ScriptCommand(token.StringValue);    
-                    }
-                    break;
+                // case TokenCode.RawWord:
+                //     if (currentScriptCommand != null)
+                //     {
+                //         currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
+                //     }
+                //     else
+                //     {
+                //         currentScriptCommand = new ScriptCommand(token.StringValue);    
+                //     }
+                //     break;
                     
                 case TokenCode.CommandSeparator:
                     if (currentScriptCommand != null)

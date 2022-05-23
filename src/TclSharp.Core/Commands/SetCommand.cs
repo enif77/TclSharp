@@ -25,12 +25,12 @@ public class SetCommand : ICommandImplementation
     {
         if (scriptCommand == null) throw new ArgumentNullException(nameof(scriptCommand));
 
-        if (scriptCommand.Arguments.Count == 0)
+        if (scriptCommand.Arguments.Count == 1)
         {
             return Result<string>.Error("At least one argument, a variable name, expected.");
         }
 
-        var firstArgument = scriptCommand.Arguments[0];
+        var firstArgument = scriptCommand.Arguments[1];
         var getFirstArgumentValueResult = _interpreter.ProcessArgumentValue(firstArgument);
         if (getFirstArgumentValueResult.IsSuccess == false)
         {
@@ -45,9 +45,9 @@ public class SetCommand : ICommandImplementation
 
         string? value = null;
 
-        if (scriptCommand.Arguments.Count > 1)
+        if (scriptCommand.Arguments.Count > 2)
         {
-            var secondArgument = scriptCommand.Arguments[1];
+            var secondArgument = scriptCommand.Arguments[2];
             var getSecondArgumentValueResult = _interpreter.ProcessArgumentValue(secondArgument);
             if (getSecondArgumentValueResult.IsSuccess == false)
             {
