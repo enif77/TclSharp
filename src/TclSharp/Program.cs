@@ -25,6 +25,7 @@ TestParser(File.ReadAllText(scriptsFolderPath + "hello-variable.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "puts-nonewline.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "hello-world-nl.tcl"));
 TestParser(File.ReadAllText(scriptsFolderPath + "hello-world-braces-nl.tcl"));
+TestParser(File.ReadAllText(scriptsFolderPath + "braces-nl-escapes.tcl"));
 
 
 Console.WriteLine("DONE");

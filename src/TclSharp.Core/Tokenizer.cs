@@ -40,23 +40,25 @@ public class Tokenizer : ITokenizer
                 // A white char ends a word. We'll return it below.
                 break;
             }
-            
+
+            if (IsWordsSeparator(c))
+            {
+                // Are we extracting a word now?
+                if (wordSb == null)
+                {
+                    // No, so consume the command separator char...
+                    NextChar();
+                        
+                    // and return the EofC token.
+                    return CurrentToken = _commandSeparatorToken;
+                }
+                
+                // A command separator ends a word. We'll return it below.
+                break;
+            }
+
             switch (c)
             {
-                case '\n':
-                case ';':
-                    // Are we extracting a word now?
-                    if (wordSb == null)
-                    {
-                        // No, so consume the command separator char...
-                        NextChar();
-                        
-                        // and return the EofC token.
-                        return CurrentToken = _commandSeparatorToken;
-                    }
-                    // A command separator finishes a word extracting.
-                    return CurrentToken = WordToken(wordSb.ToString());
-
                 case '"':
                     if (wordSb != null)
                     {
@@ -89,7 +91,7 @@ public class Tokenizer : ITokenizer
                     break;
             }
         
-            c = _reader.NextChar();
+            c = NextChar();
         }
 
         // We got here, because we are at the end of the source, 
@@ -104,14 +106,15 @@ public class Tokenizer : ITokenizer
     private readonly IToken _eofToken = new Token(TokenCode.EoF);
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
-    private int _nextChar = -1;
+    private int _nextCharBuffer = -1;
 
+    
     private int NextChar()
     {
-        if (_nextChar >= 0)
+        if (_nextCharBuffer >= 0)
         {
-            var nextChar = _nextChar;
-            _nextChar = -1;
+            var nextChar = _nextCharBuffer;
+            _nextCharBuffer = -1;
 
             return nextChar;
         }
@@ -125,7 +128,7 @@ public class Tokenizer : ITokenizer
         c = _reader.NextChar();
         if (c != '\n')
         {
-            _nextChar = c;
+            _nextCharBuffer = c;
 
             return '\\';
         }
@@ -136,15 +139,19 @@ public class Tokenizer : ITokenizer
             c = _reader.NextChar();
         }
 
-        _nextChar = c;
+        _nextCharBuffer = c;
 
         return ' ';
     }
 
 
     private static bool IsWhiteSpace(int c)
-        => c != '\n' && char.IsWhiteSpace((char)c);
+        => IsWordsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
+    
+    private static bool IsWordsSeparator(int c)
+        => c is '\n' or ';';
+    
 
     private static IToken WordToken(string word)
         => new Token(TokenCode.Word, word);
@@ -187,12 +194,7 @@ public class Tokenizer : ITokenizer
             switch (c)
             {
                 case '\\':
-                    var escapeBracketedCharResult = EscapeBracketedChar();
-                    if (escapeBracketedCharResult.IsSuccess == false)
-                    {
-                        return Result<string>.Error(escapeBracketedCharResult.Message);
-                    }
-                    c = escapeBracketedCharResult.Data;
+                    c = EscapeBracketedWordChar(wordSb);
                     break;
                 
                 case '{':
@@ -204,9 +206,11 @@ public class Tokenizer : ITokenizer
                     bracketLevel--;
                     if (bracketLevel == 0)
                     {
-                        NextChar();
-        
-                        return Result<string>.Ok(wordSb.ToString(), null);
+                        c = NextChar();
+                        
+                        return (c < 0 || IsWordsSeparator(c) || IsWhiteSpace(c))
+                            ? Result<string>.Ok(wordSb.ToString(), null)
+                            : Result<string>.Error("A EOF, words or commands separator expected.");
                     }
                     break;
                 }
@@ -221,17 +225,14 @@ public class Tokenizer : ITokenizer
     }
 
 
-    private IResult<char> EscapeBracketedChar()
+    private int EscapeBracketedWordChar(StringBuilder wordSb)
     {
         var c = NextChar();
-        switch (c)
+        if (c != '{' && c != '}')
         {
-            case '{':
-            case '}':
-                return Result<char>.Ok((char)c);
-            
-            default:
-                return Result<char>.Error($"Unsupported escaped character '{(char)c}' in bracketed word.");
+            wordSb.Append('\\');
         }
+
+        return c;
     }
 }

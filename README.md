@@ -43,3 +43,7 @@ white-space :: any white space char but '\n' .
 Note: A command can be empty, so multiple command separators in a row are allowed. 
 
 Note2: A command name must start with a letter or an underscore.
+
+## TODO
+
+* Handle CRLF as a command separator.
