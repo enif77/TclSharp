@@ -74,6 +74,17 @@ public class Parser : IParser
                         currentScriptCommand = new ScriptCommand(token.StringValue);    
                     }
                     break;
+                
+                case TokenCode.RawWord:
+                    if (currentScriptCommand != null)
+                    {
+                        currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
+                    }
+                    else
+                    {
+                        currentScriptCommand = new ScriptCommand(token.StringValue);    
+                    }
+                    break;
                     
                 case TokenCode.CommandSeparator:
                     if (currentScriptCommand != null)

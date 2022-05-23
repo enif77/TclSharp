@@ -83,7 +83,7 @@ public class Tokenizer : ITokenizer
                     {
                         return ErrorToken(extractBracketedWordResult.Message);
                     }
-                    return CurrentToken = WordToken(extractBracketedWordResult.Data!);
+                    return CurrentToken = RawWordToken(extractBracketedWordResult.Data!);
                 
                 default:
                     wordSb ??= new StringBuilder();
@@ -166,6 +166,10 @@ public class Tokenizer : ITokenizer
 
     private static IToken WordToken(string word)
         => new Token(TokenCode.Word, word);
+    
+    
+    private static IToken RawWordToken(string word)
+        => new Token(TokenCode.RawWord, word);
     
     
     private static IToken ErrorToken(string msg)

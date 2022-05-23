@@ -24,9 +24,14 @@ public enum TokenCode
     CommandSeparator,
     
     /// <summary>
-    /// A word (a command name or argument).
+    /// A word (a command name or argument) and "quoted word".
     /// </summary>
-    Word
+    Word,
+    
+    /// <summary>
+    /// A {braced word}, that does not require any substitution.
+    /// </summary>
+    RawWord
 }
 
 
