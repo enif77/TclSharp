@@ -87,6 +87,21 @@ public class Tokenizer : ITokenizer
                     }
                     return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                 
+                case '[':
+                    if (wordSb == null)
+                    {
+                        var extractCommandSubstitutionWordResult = ExtractCommandSubstitutionWord();
+                        if (extractCommandSubstitutionWordResult.IsSuccess == false)
+                        {
+                            return ErrorToken(extractCommandSubstitutionWordResult.Message);
+                        }
+                        
+                        return CurrentToken = WordToken(extractCommandSubstitutionWordResult.Data!);
+                    }
+
+                    wordSb.Append((char) c);    
+                    break;
+                
                 default:
                     wordSb ??= new StringBuilder();
                     wordSb.Append((char) c);
@@ -266,6 +281,58 @@ public class Tokenizer : ITokenizer
     {
         var c = NextChar();
         if (c != '{' && c != '}')
+        {
+            wordSb.Append('\\');
+        }
+
+        return c;
+    }
+    
+    
+    private IResult<string> ExtractCommandSubstitutionWord()
+    {
+        var wordSb = new StringBuilder("[");
+
+        var bracketLevel = 1;
+        var c = NextChar();
+        while (IsEoF(c) == false)
+        {
+            switch (c)
+            {
+                case '\\':
+                    c = EscapeSquareBracketedWordChar(wordSb);
+                    break;
+                
+                case '[':
+                    bracketLevel++;
+                    break;
+                
+                case ']':
+                {
+                    bracketLevel--;
+                    if (bracketLevel == 0)
+                    {
+                        wordSb.Append(']');
+                        
+                        return CheckWordEnd(NextChar(), wordSb);
+                    }
+                    break;
+                }
+            }
+
+            wordSb.Append((char) c);
+            
+            c = NextChar();
+        }
+
+        return Result<string>.Error("The bracketed word end character ']' expected.");
+    }
+    
+    
+    private int EscapeSquareBracketedWordChar(StringBuilder wordSb)
+    {
+        var c = NextChar();
+        if (c != '[' && c != ']')
         {
             wordSb.Append('\\');
         }

@@ -6,28 +6,28 @@ using TclSharp.Core.Extensions;
 
 Console.WriteLine("TclSharp v0.0.8");
 
-TestInterpreter();
-
-TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
-TestTokenizer("word3;word4");
-TestTokenizer("word1");
-
-TestParser(new StringSourceReader("puts hello-puts"));
-TestParser(new StringSourceReader("set msg hello-msg; puts $msg"));
+// TestInterpreter();
+//
+// TestTokenizer("  word1 $word2 \nword3;word4;;word5;   ");
+// TestTokenizer("word3;word4");
+// TestTokenizer("word1");
+//
+// TestParser(new StringSourceReader("puts hello-puts"));
+// TestParser(new StringSourceReader("set msg hello-msg; puts $msg"));
 
 const string scriptsFolderPath = "../../../../../scripts/";
 
-TestParser(new FileSourceReader(scriptsFolderPath + "empty.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-variable.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "puts-nonewline.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-nl.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-nl.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-no-subst.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-quotes-with-subst.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "empty.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-variable.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "puts-nonewline.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-nl.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-nl.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-no-subst.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-quotes-with-subst.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl"));
 
 

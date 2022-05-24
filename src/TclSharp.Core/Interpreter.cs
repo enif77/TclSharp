@@ -78,19 +78,19 @@ public class Interpreter : IInterpreter
                 continue;
             }
 
-            if (c == '[')
-            {
-                var substituteCommandResult = SubstituteCommand(reader);
-                if (substituteCommandResult.IsSuccess == false)
-                {
-                    return substituteCommandResult;
-                }
-
-                sb.Append(substituteCommandResult.Data!);
-                c = reader.CurrentChar;
-                
-                continue;
-            }
+            // if (c == '[')
+            // {
+            //     var substituteCommandResult = SubstituteCommand(reader);
+            //     if (substituteCommandResult.IsSuccess == false)
+            //     {
+            //         return substituteCommandResult;
+            //     }
+            //
+            //     sb.Append(substituteCommandResult.Data!);
+            //     c = reader.CurrentChar;
+            //     
+            //     continue;
+            // }
 
             sb.Append((char)c);
             c = reader.NextChar();
@@ -217,7 +217,7 @@ public class Interpreter : IInterpreter
         var c = reader.NextChar();  // Eat '[' 
         if (c < 0)
         {
-            return Result<string>.Error("Unexpected '[' at the end of the script.");
+            return Result<string>.Error("Unexpected '[' at the end of the word.");
         }
 
         return Result<string>.Error("Command substitution not supported.");
