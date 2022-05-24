@@ -48,7 +48,7 @@ public interface IInterpreter
     /// </summary>
     /// <param name="argument">A command arguments.</param>
     /// <returns>Processed command argument.</returns>
-    IResult<string> ProcessArgumentValue(ICommandArgument argument);
+    IResult<string> InterpretCommandArgument(ICommandArgument argument);
 
     #endregion
     

@@ -1,7 +1,5 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
-using TclSharp.Core.CommandArguments;
-
 namespace TclSharp.Core;
 
 
@@ -65,25 +63,13 @@ public class Parser : IParser
             switch (token.Code)
             {
                 case TokenCode.Word:
-                case TokenCode.RawWord:
                     if (currentScriptCommand == null)
                     {
                         currentScriptCommand = new ScriptCommand();
                     }
                
-                    currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
+                    currentScriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
                     break;
-                
-                // case TokenCode.RawWord:
-                //     if (currentScriptCommand != null)
-                //     {
-                //         currentScriptCommand.Arguments.Add(new SimpleArgument(token.StringValue));
-                //     }
-                //     else
-                //     {
-                //         currentScriptCommand = new ScriptCommand(token.StringValue);    
-                //     }
-                //     break;
                     
                 case TokenCode.CommandSeparator:
                     if (currentScriptCommand != null)

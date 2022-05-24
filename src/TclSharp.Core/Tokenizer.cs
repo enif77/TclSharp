@@ -83,7 +83,7 @@ public class Tokenizer : ITokenizer
                     {
                         return ErrorToken(extractBracketedWordResult.Message);
                     }
-                    return CurrentToken = RawWordToken(extractBracketedWordResult.Data!);
+                    return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                 
                 default:
                     wordSb ??= new StringBuilder();
@@ -168,10 +168,6 @@ public class Tokenizer : ITokenizer
         => new Token(TokenCode.Word, word);
     
     
-    private static IToken RawWordToken(string word)
-        => new Token(TokenCode.RawWord, word);
-    
-    
     private static IToken ErrorToken(string msg)
         => new Token(TokenCode.Unknown, msg);
 
@@ -226,7 +222,7 @@ public class Tokenizer : ITokenizer
     
     private IResult<string> ExtractBracketedWord()
     {
-        var wordSb = new StringBuilder();
+        var wordSb = new StringBuilder("{");
 
         var bracketLevel = 1;
         var c = NextChar();
@@ -247,6 +243,8 @@ public class Tokenizer : ITokenizer
                     bracketLevel--;
                     if (bracketLevel == 0)
                     {
+                        wordSb.Append('}');
+                        
                         return CheckWordEnd(NextChar(), wordSb);
                     }
                     break;

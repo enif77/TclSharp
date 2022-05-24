@@ -2,9 +2,6 @@
 
 namespace TclSharp.Core.Extensions;
 
-using TclSharp.Core.CommandArguments;
-
-
 /// <summary>
 /// IScript related helper methods.
 /// </summary>
@@ -21,14 +18,14 @@ public static class ScriptExtensions
     {
         var command = new ScriptCommand();
 
-        command.Arguments.Add(new SimpleArgument("puts"));
+        command.Arguments.Add(new CommandArgument("puts"));
         
         if (noNewLine)
         {
-            command.Arguments.Add(new SimpleArgument("-nonewline"));
+            command.Arguments.Add(new CommandArgument("-nonewline"));
         }
 
-        command.Arguments.Add(new SimpleArgument(message ?? string.Empty));
+        command.Arguments.Add(new CommandArgument(message ?? string.Empty));
         
         return script.AddCommand(command);
     }
@@ -44,12 +41,12 @@ public static class ScriptExtensions
     {
         var command = new ScriptCommand();
 
-        command.Arguments.Add(new SimpleArgument("set"));
-        command.Arguments.Add(new SimpleArgument(variableName));
+        command.Arguments.Add(new CommandArgument("set"));
+        command.Arguments.Add(new CommandArgument(variableName));
 
         if (value != null)
         {
-            command.Arguments.Add(new SimpleArgument(value));
+            command.Arguments.Add(new CommandArgument(value));
         }
 
         return script.AddCommand(command);

@@ -26,12 +26,7 @@ public enum TokenCode
     /// <summary>
     /// A word (a command name or argument) and "quoted word".
     /// </summary>
-    Word,
-    
-    /// <summary>
-    /// A {braced word}, that does not require any substitution.
-    /// </summary>
-    RawWord
+    Word
 }
 
 

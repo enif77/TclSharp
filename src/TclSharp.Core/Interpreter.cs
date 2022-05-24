@@ -45,10 +45,16 @@ public class Interpreter : IInterpreter
     
     #region command arguments
 
-    public IResult<string> ProcessArgumentValue(ICommandArgument argument)
+    public IResult<string> InterpretCommandArgument(ICommandArgument argument)
     {
         var value = argument.Value;
-        
+
+        if (value.StartsWith("{"))
+        {
+            // {bracketed string} -> bracketed string
+            return Result<string>.Ok(value.Substring(1, value.Length - 2), null);
+        }
+
         var sb = new StringBuilder(value.Length);
 
         var reader = new StringSourceReader(value);

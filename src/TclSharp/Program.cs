@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.7");
+Console.WriteLine("TclSharp v0.0.8");
 
 TestInterpreter();
 
@@ -26,6 +26,8 @@ TestParser(new FileSourceReader(scriptsFolderPath + "puts-nonewline.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-nl.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-nl.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-no-subst.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-quotes-with-subst.tcl"));
 
 
 Console.WriteLine("DONE");
