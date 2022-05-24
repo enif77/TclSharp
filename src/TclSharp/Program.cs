@@ -28,6 +28,7 @@ TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-nl.tcl")
 TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-no-subst.tcl"));
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-quotes-with-subst.tcl"));
+TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl"));
 
 
 Console.WriteLine("DONE");

@@ -66,13 +66,27 @@ public class Interpreter : IInterpreter
         {
             if (c == '$')
             {
-                var extractVariableNameResult = ExtractVariableName(reader);
-                if (extractVariableNameResult.IsSuccess == false)
+                var substituteVariableResult = SubstituteVariable(reader);
+                if (substituteVariableResult.IsSuccess == false)
                 {
-                    return extractVariableNameResult;
+                    return substituteVariableResult;
                 }
 
-                sb.Append(GetVariableValue(extractVariableNameResult.Data!));
+                sb.Append(substituteVariableResult.Data!);
+                c = reader.CurrentChar;
+                
+                continue;
+            }
+
+            if (c == '[')
+            {
+                var substituteCommandResult = SubstituteCommand(reader);
+                if (substituteCommandResult.IsSuccess == false)
+                {
+                    return substituteCommandResult;
+                }
+
+                sb.Append(substituteCommandResult.Data!);
                 c = reader.CurrentChar;
                 
                 continue;
@@ -85,13 +99,75 @@ public class Interpreter : IInterpreter
         return Result<string>.Ok(sb.ToString(), null);
     }
 
+    #endregion
     
-    private IResult<string> ExtractVariableName(ISourceReader reader)
+    
+    #region commands
+    
+    public bool IsKnownCommand(string commandName)
+    {
+        return _commandImplementations.ContainsKey(commandName);
+    }
+
+
+    public IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation)
+    {
+        if (_commandImplementations.ContainsKey(commandName))
+        {
+            return Result<ICommandImplementation>.Error(commandImplementation, $"The '{commandName}' is already defined.");
+        }
+
+        _commandImplementations.Add(commandName, commandImplementation);
+
+        return Result<ICommandImplementation>.Ok(commandImplementation, $"The '{commandName}' command implementation added.");
+    }
+    
+    #endregion
+
+    
+    public IResult<string> Execute(IScript script)
+    {
+        if (script == null) throw new ArgumentNullException(nameof(script));
+        
+        var lastResult = Result<string>.Ok();
+        foreach (var command in script.Commands)
+        {
+            var interpretCommandNameResult = InterpretCommandArgument(command.Arguments[0]);
+            if (interpretCommandNameResult.IsSuccess == false)
+            {
+                return interpretCommandNameResult;
+            }
+
+            var commandName = interpretCommandNameResult.Data!;
+            
+            if (_commandImplementations.ContainsKey(commandName) == false)
+            {
+                return Result<string>.Error($"The '{commandName}' command, defined as '{command.Name}', is not defined.");
+            }
+
+            var commandImplementation = _commandImplementations[commandName];
+            
+            lastResult = commandImplementation.Execute(command);
+            if (lastResult.IsSuccess == false)
+            {
+                break;
+            }
+        }
+
+        return lastResult;
+    }
+
+    
+    private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
+    private readonly IDictionary<string, string> _variables;
+    
+    
+    private IResult<string> SubstituteVariable(ISourceReader reader)
     {
         var c = reader.NextChar();  // Eat '$' 
         if (c < 0)
         {
-            return Result<string>.Error("Unexpected '$' at the end of the string.");
+            return Result<string>.Error("Unexpected '$' at the end of the script.");
         }
 
         var nameSb = new StringBuilder();
@@ -132,60 +208,18 @@ public class Interpreter : IInterpreter
         
         return (nameSb.Length == 0)
             ? Result<string>.Error("A variable name expected.")
-            : Result<string>.Ok(nameSb.ToString(), null);
-    }
-    
-    #endregion
-    
-    
-    #region commands
-    
-    public bool IsKnownCommand(string commandName)
-    {
-        return _commandImplementations.ContainsKey(commandName);
+            : Result<string>.Ok(GetVariableValue(nameSb.ToString()), null);
     }
 
 
-    public IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation)
+    private IResult<string> SubstituteCommand(ISourceReader reader)
     {
-        if (_commandImplementations.ContainsKey(commandName))
+        var c = reader.NextChar();  // Eat '[' 
+        if (c < 0)
         {
-            return Result<ICommandImplementation>.Error(commandImplementation, $"The '{commandName}' is already defined.");
+            return Result<string>.Error("Unexpected '[' at the end of the script.");
         }
 
-        _commandImplementations.Add(commandName, commandImplementation);
-
-        return Result<ICommandImplementation>.Ok(commandImplementation, $"The '{commandName}' command implementation added.");
+        return Result<string>.Error("Command substitution not supported.");
     }
-    
-    #endregion
-
-    
-    public IResult<string> Execute(IScript script)
-    {
-        if (script == null) throw new ArgumentNullException(nameof(script));
-        
-        var lastResult = Result<string>.Ok();
-        foreach (var command in script.Commands)
-        {
-            if (_commandImplementations.ContainsKey(command.Name) == false)
-            {
-                return Result<string>.Error($"The '{command.Name}' command is not defined.");
-            }
-
-            var commandImplementation = _commandImplementations[command.Name];
-            
-            lastResult = commandImplementation.Execute(command);
-            if (lastResult.IsSuccess == false)
-            {
-                break;
-            }
-        }
-
-        return lastResult;
-    }
-
-    
-    private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
-    private readonly IDictionary<string, string> _variables;
 }
