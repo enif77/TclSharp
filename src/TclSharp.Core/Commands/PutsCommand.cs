@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core.Commands;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// Writes a message to the output.

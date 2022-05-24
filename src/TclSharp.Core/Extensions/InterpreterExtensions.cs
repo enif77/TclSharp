@@ -3,6 +3,8 @@
 namespace TclSharp.Core.Extensions;
 
 using TclSharp.Core.Commands;
+using TclSharp.Core.Results;
+
 
 
 /// <summary>

@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// Represents a script with commands.

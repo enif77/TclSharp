@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core.Commands;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// Read and write variables.

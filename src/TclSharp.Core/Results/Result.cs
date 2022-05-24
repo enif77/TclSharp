@@ -1,6 +1,6 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
-namespace TclSharp.Core;
+namespace TclSharp.Core.Results;
 
 using System;
 

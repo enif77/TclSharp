@@ -2,6 +2,9 @@
 
 namespace TclSharp.Core.Extensions;
 
+using TclSharp.Core.Results;
+
+
 /// <summary>
 /// IScript related helper methods.
 /// </summary>

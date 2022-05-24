@@ -1,8 +1,10 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
+namespace TclSharp.Core;
+
 using System.Text;
 
-namespace TclSharp.Core;
+using TclSharp.Core.Results;
 
 
 public class Tokenizer : ITokenizer
