@@ -88,18 +88,14 @@ public class Tokenizer : ITokenizer
                     return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                 
                 case '[':
-                    if (wordSb == null)
+                    var extractCommandSubstitutionWordResult = ExtractCommandSubstitutionWord();
+                    if (extractCommandSubstitutionWordResult.IsSuccess == false)
                     {
-                        var extractCommandSubstitutionWordResult = ExtractCommandSubstitutionWord();
-                        if (extractCommandSubstitutionWordResult.IsSuccess == false)
-                        {
-                            return ErrorToken(extractCommandSubstitutionWordResult.Message);
-                        }
-                        
-                        return CurrentToken = WordToken(extractCommandSubstitutionWordResult.Data!);
+                        return ErrorToken(extractCommandSubstitutionWordResult.Message);
                     }
-
-                    wordSb.Append((char) c);    
+   
+                    wordSb ??= new StringBuilder();
+                    wordSb.Append(extractCommandSubstitutionWordResult.Data!);
                     break;
                 
                 default:
@@ -168,6 +164,9 @@ public class Tokenizer : ITokenizer
     private static bool IsWhiteSpace(int c)
         => IsWordsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
+
+    private static bool IsWordEnd(int c)
+        => IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c);
     
     private static bool IsWordsSeparator(int c)
         => c is '\n' or ';';
@@ -175,7 +174,7 @@ public class Tokenizer : ITokenizer
 
     private static IResult<string> CheckWordEnd(int c, StringBuilder wordSb)
     {
-        return (IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c))
+        return IsWordEnd(c)
             ? Result<string>.Ok(wordSb.ToString(), null)
             : Result<string>.Error("An EoF, words or commands separator expected.");
     }
@@ -314,7 +313,7 @@ public class Tokenizer : ITokenizer
                     {
                         wordSb.Append(']');
                         
-                        return CheckWordEnd(NextChar(), wordSb);
+                        return Result<string>.Ok(wordSb.ToString(), null);
                     }
                     break;
                 }
