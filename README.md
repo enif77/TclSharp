@@ -31,8 +31,8 @@ script :: [ commands ] EoF .
 commands :: command { command-separator command } .
 command-separator :: '\n' | ';' .
 command :: word { words-separator word } .
-word :: simple-word | quoted-word | bracketed-word .
-simple-word :: any char but white-space or command-separator .
+word :: basic-word | quoted-word | bracketed-word .
+basic-word :: any char but white-space or command-separator .
 quoted-word :: '"' { any allowed char } '"' .
 bracketed-word :: '{' any allowed char '}' .
 white-space :: any white space char but '\n' .
