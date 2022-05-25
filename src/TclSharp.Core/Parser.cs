@@ -110,10 +110,14 @@ public class Parser : IParser
             switch (token.Code)
             {
                 case TokenCode.Word:
-                    scriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
-                    token = tokenizer.NextToken();
+                    var parseWordResult = ParseWord(tokenizer, scriptCommand);
+                    if (parseWordResult.IsSuccess == false)
+                    {
+                        return parseWordResult;
+                    }
+                    token = tokenizer.CurrentToken;
                     break;
-                    
+                
                 case TokenCode.CommandSeparator:
                 case TokenCode.EoF:
                     done = true;
@@ -125,6 +129,52 @@ public class Parser : IParser
         }
         
         return Result<string>.Ok();
+    }
+
+    /// <summary>
+    /// Parses a word.
+    /// word :: basic-word | quoted-word | bracketed-word .
+    /// </summary>
+    private IResult<string> ParseWord(ITokenizer tokenizer, IScriptCommand scriptCommand)
+    {
+        var token = tokenizer.CurrentToken;
+        if (token.Code != TokenCode.Word)
+        {
+            return UnexpectedTokenResult(token, "A word");
+        }
+
+        scriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
+        
+        tokenizer.NextToken();
+
+        return Result<string>.Ok();
+    }
+    
+    /// <summary>
+    /// Parses a basic-word.
+    /// basic-word :: char { chars } .
+    /// </summary>
+    private IResult<string> ParseSimpleWord(ITokenizer tokenizer, ICommandArgument commandArgument)
+    {
+        return Result<string>.Error($"The basic-word parsing is not implemented yet.");
+    }
+    
+    /// <summary>
+    /// Parses a quoted-word.
+    /// quoted-word :: '"' { chars } '"' .
+    /// </summary>
+    private IResult<string> ParseQuotedWord(ITokenizer tokenizer, ICommandArgument commandArgument)
+    {
+        return Result<string>.Error($"The quoted-word parsing is not implemented yet.");
+    }
+    
+    /// <summary>
+    /// Parses a bracketed-word.
+    /// bracketed-word :: '{' { chars } '}' .
+    /// </summary>
+    private IResult<string> ParseBracketedWord(ITokenizer tokenizer, ICommandArgument commandArgument)
+    {
+        return Result<string>.Error($"The bracketed-word parsing is not implemented yet.");
     }
 
 
