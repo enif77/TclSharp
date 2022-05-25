@@ -30,9 +30,7 @@ A TCL implementation for .NET in C#.
 script :: [ commands ] EoF .
 commands :: command { command-separator command } .
 command-separator :: '\n' | ';' .
-command :: command-name { command-arguments } .
-command-name :: 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' .
-command-arguments :: word { white-space word } .
+command :: word { words-separator word } .
 word :: simple-word | quoted-word | bracketed-word .
 simple-word :: any char but white-space or command-separator .
 quoted-word :: '"' { any allowed char } '"' .
