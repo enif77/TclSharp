@@ -143,7 +143,9 @@ public class Parser : IParser
             return UnexpectedTokenResult(token, "A word");
         }
 
-        scriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
+        var tokenValue = token.Children[0].StringValue;
+        
+        scriptCommand.Arguments.Add(new CommandArgument(tokenValue));
         
         tokenizer.NextToken();
 

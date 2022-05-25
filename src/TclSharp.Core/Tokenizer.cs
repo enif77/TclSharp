@@ -84,7 +84,7 @@ public class Tokenizer : ITokenizer
                             return ErrorToken(extractBracketedWordResult.Message);
                         }
                         
-                        return CurrentToken = WordToken(extractBracketedWordResult.Data!);
+                        return CurrentToken = BracketedWordToken(extractBracketedWordResult.Data!);
                     }
                     wordSb.Append((char) c);
                     break;
@@ -181,8 +181,28 @@ public class Tokenizer : ITokenizer
     }
 
 
+    // private static IToken WordToken(string word)
+    //     => new Token(TokenCode.Word, word);
+   
+    
     private static IToken WordToken(string word)
-        => new Token(TokenCode.Word, word);
+    {
+        var tok = new Token(TokenCode.Word, "word");
+
+        tok.Children.Add(new Token(TokenCode.Text, word));
+        
+        return tok;
+    }
+
+    
+    private static IToken BracketedWordToken(string word)
+    {
+        var tok = new Token(TokenCode.Word, "bracketed-word");
+
+        tok.Children.Add(new Token(TokenCode.Text, word));
+        
+        return tok;
+    }
     
     
     private static IToken ErrorToken(string msg)
