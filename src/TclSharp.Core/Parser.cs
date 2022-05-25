@@ -47,7 +47,7 @@ public class Parser : IParser
        
         return (tokenizer.CurrentToken.Code == TokenCode.EoF)
             ? Result<string>.Ok()
-            : Result<string>.Error($"Unexpected token with code {token.Code} found while parsing commands. EoF expected.");
+            : UnexpectedTokenResult(token, "EoF");
     }
 
     /// <summary>
@@ -59,44 +59,77 @@ public class Parser : IParser
         IScriptCommand? currentScriptCommand = null;
         
         var token = tokenizer.CurrentToken;
+        
+        while (token.Code != TokenCode.EoF)
+        {
+            currentScriptCommand ??= new ScriptCommand();
+            var parseCommandResult = ParseCommand(tokenizer, currentScriptCommand, false);
+            if (parseCommandResult.IsSuccess == false)
+            {
+                return parseCommandResult;
+            }
+
+            if (currentScriptCommand.Arguments.Count > 0)
+            {
+                // We are not adding empty script commands.
+                script.AddCommand(currentScriptCommand);
+                currentScriptCommand = null;
+            }
+
+            token = tokenizer.CurrentToken;
+            
+            if (token.Code == TokenCode.CommandSeparator)
+            {
+                token = tokenizer.NextToken();
+            }
+            
+            // Here we start a next command parsing or we are at EoF.
+        }
+       
+        return Result<string>.Ok();
+    }
+
+
+    /// <summary>
+    /// Parses a command.
+    /// command :: [ word { words-separator word } ] .
+    /// </summary>
+    private IResult<string> ParseCommand(ITokenizer tokenizer, IScriptCommand scriptCommand, bool isNested)
+    {
+        var token = tokenizer.CurrentToken;
+
+        // An empty command?
+        if (token.Code is TokenCode.CommandSeparator)
+        {
+            return Result<string>.Ok();
+        }
+        
         var done = false;
         while (done == false)
         {
             switch (token.Code)
             {
                 case TokenCode.Word:
-                    if (currentScriptCommand == null)
-                    {
-                        currentScriptCommand = new ScriptCommand();
-                    }
-               
-                    currentScriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
+                    scriptCommand.Arguments.Add(new CommandArgument(token.StringValue));
+                    token = tokenizer.NextToken();
                     break;
                     
                 case TokenCode.CommandSeparator:
-                    if (currentScriptCommand != null)
-                    {
-                        script.AddCommand(currentScriptCommand);
-                        currentScriptCommand = null;
-                    }
+                case TokenCode.EoF:
+                    done = true;
                     break;
                 
                 default:
-                    done = true;
-                    break;
+                    return UnexpectedTokenResult(token, "A command-separator or EoF");
             }
-
-            if (done == false)
-            {
-                token = tokenizer.NextToken();
-            }
-        }
-        
-        if (currentScriptCommand != null)
-        {
-            script.AddCommand(currentScriptCommand);
         }
         
         return Result<string>.Ok();
+    }
+
+
+    private static IResult<string> UnexpectedTokenResult(IToken token, string expectedToken)
+    {
+        return Result<string>.Error($"Unexpected token with code {token.Code} found while parsing commands. {expectedToken} expected.");
     }
 }
