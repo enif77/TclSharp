@@ -62,30 +62,32 @@ public class Tokenizer : ITokenizer
             switch (c)
             {
                 case '"':
-                    if (wordSb != null)
+                    if (wordSb == null)
                     {
-                        return ErrorToken("Unexpected quoted word start character '\"' found.");
+                        var extractQuotedWordResult = ExtractQuotedWord();
+                        if (extractQuotedWordResult.IsSuccess == false)
+                        {
+                            return ErrorToken(extractQuotedWordResult.Message);
+                        }
+                        
+                        return CurrentToken = WordToken(extractQuotedWordResult.Data!);    
                     }
-
-                    var extractQuotedWordResult = ExtractQuotedWord();
-                    if (extractQuotedWordResult.IsSuccess == false)
-                    {
-                        return ErrorToken(extractQuotedWordResult.Message);
-                    }
-                    return CurrentToken = WordToken(extractQuotedWordResult.Data!);
+                    wordSb.Append((char) c);
+                    break;
                 
                 case '{':
-                    if (wordSb != null)
+                    if (wordSb == null)
                     {
-                        return ErrorToken("Unexpected braced word start character '{' found.");
+                        var extractBracketedWordResult = ExtractBracketedWord();
+                        if (extractBracketedWordResult.IsSuccess == false)
+                        {
+                            return ErrorToken(extractBracketedWordResult.Message);
+                        }
+                        
+                        return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                     }
-
-                    var extractBracketedWordResult = ExtractBracketedWord();
-                    if (extractBracketedWordResult.IsSuccess == false)
-                    {
-                        return ErrorToken(extractBracketedWordResult.Message);
-                    }
-                    return CurrentToken = WordToken(extractBracketedWordResult.Data!);
+                    wordSb.Append((char) c);
+                    break;
                 
                 case '[':
                     var extractCommandSubstitutionWordResult = ExtractCommandSubstitutionWord();
@@ -93,7 +95,6 @@ public class Tokenizer : ITokenizer
                     {
                         return ErrorToken(extractCommandSubstitutionWordResult.Message);
                     }
-   
                     wordSb ??= new StringBuilder();
                     wordSb.Append(extractCommandSubstitutionWordResult.Data!);
                     break;
