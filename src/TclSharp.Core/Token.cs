@@ -10,11 +10,13 @@ public class Token : IToken
 {
     public TokenCode Code { get; }
     public string StringValue { get; }
-    
-    
+    public IList<IToken> Children { get; }
+
+
     public Token(TokenCode tokenCode, string stringValue = "")
     {
         Code = tokenCode;
         StringValue = stringValue;
+        Children = new List<IToken>();
     }
 }

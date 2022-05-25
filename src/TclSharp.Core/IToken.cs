@@ -19,6 +19,11 @@ public enum TokenCode
     EoF,
     
     /// <summary>
+    /// A simple token with no children. Just text.
+    /// </summary>
+    Text,
+    
+    /// <summary>
     /// '\n' or ';'.
     /// </summary>
     CommandSeparator,
@@ -26,7 +31,12 @@ public enum TokenCode
     /// <summary>
     /// A word (a command name or argument) and "quoted word".
     /// </summary>
-    Word
+    Word,
+    
+    /// <summary>
+    /// A [] enclosed command.
+    /// </summary>
+    Command
 }
 
 
@@ -44,4 +54,10 @@ public interface IToken
     /// An optional string value of this token (a word, name, number, ...).  
     /// </summary>
     string StringValue { get; }
+
+    /// <summary>
+    /// A token can consist of multiple tokens.
+    /// See TokenCode.Word or TokenCode.Command.
+    /// </summary>
+    IList<IToken> Children { get; }
 }
