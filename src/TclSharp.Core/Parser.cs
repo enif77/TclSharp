@@ -69,17 +69,20 @@ public class Parser : IParser
                 return parseCommandResult;
             }
 
+            // We are not adding empty script commands.
             if (currentScriptCommand.Arguments.Count > 0)
             {
-                // We are not adding empty script commands.
                 script.AddCommand(currentScriptCommand);
                 currentScriptCommand = null;
             }
 
+            // Update where we are.
             token = tokenizer.CurrentToken;
             
+            // We consumed a command/its words till a command separator. 
             if (token.Code == TokenCode.CommandSeparator)
             {
+                // Now we can consume it now.
                 token = tokenizer.NextToken();
             }
             
