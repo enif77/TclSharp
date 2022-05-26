@@ -31,12 +31,7 @@ public enum TokenCode
     /// <summary>
     /// A word (a command name or argument) and "quoted word".
     /// </summary>
-    Word,
-    
-    /// <summary>
-    /// A [] enclosed command.
-    /// </summary>
-    Command
+    Word
 }
 
 
