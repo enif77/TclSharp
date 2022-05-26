@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// Represents a command value.
@@ -19,5 +21,5 @@ public interface ICommandArgumentValue
     /// </summary>
     /// <param name="interpreter">An interpreter used for this value evaluations.</param>
     /// <returns>Interpreted value.</returns>
-    string Interpret(IInterpreter interpreter);
+    IResult<string> Interpret(IInterpreter interpreter);
 }

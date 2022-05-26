@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core.CommandArgumentValues;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// A simple textual value. Does no evaluation or interpretation of its value.
@@ -17,6 +19,6 @@ public class TextCommandArgumentValue : ICommandArgumentValue
     }
 
 
-    public string Interpret(IInterpreter interpreter)
-        => Value;
+    public IResult<string> Interpret(IInterpreter interpreter)
+        => Result<string>.Ok(Value, null);
 }

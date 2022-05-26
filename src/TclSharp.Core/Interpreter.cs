@@ -49,14 +49,18 @@ public class Interpreter : IInterpreter
 
     public IResult<string> InterpretCommandArgument(ICommandArgument argument)
     {
-        var value = argument.Value;
-
-        if (value.StartsWith("{"))
+        var interpretCommandValue = argument.Interpret(this);
+        if (interpretCommandValue.IsSuccess == false)
         {
-            // {bracketed string} -> bracketed string
-            return Result<string>.Ok(value.Substring(1, value.Length - 2), null);
+            return interpretCommandValue;
         }
 
+        var value = interpretCommandValue.Data ?? string.Empty;
+        
+        
+        // TODO: Replace code below with the argument.Interpret() call.
+
+        
         var sb = new StringBuilder(value.Length);
 
         var reader = new StringSourceReader(value);

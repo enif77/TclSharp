@@ -1,10 +1,8 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
-using TclSharp.Core.CommandArgumentValues;
-using TclSharp.Core.Extensions;
-
 namespace TclSharp.Core;
 
+using TclSharp.Core.Extensions;
 using TclSharp.Core.Results;
 
 
