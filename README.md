@@ -36,6 +36,8 @@ character when a script is loaded from a file.
 Commands are list of words separated by a white space. The first word is used to find a command implementation,
 that will use remaining words as its arguments. How it will interpret or use them is up to the command itself.
 
+A command can be empty, so multiple command separators in a row are allowed. 
+
 ### Words
 
 ...
@@ -48,7 +50,8 @@ that will use remaining words as its arguments. How it will interpret or use the
 * \[] - optional part.
 * {}  - 0 or more repetitions.
 * \|  - or.
-* 'c' - a specific character. 
+* 'c' - a specific character.
+* EoF - the end of a file marker (int -1). 
 
 ````
 script :: [ commands ] EoF .
@@ -64,10 +67,7 @@ bracketed-word :: '{' any allowed char '}' .
 white-space :: any unicode white space char but '\n' .
 ````
 
-Note: A command can be empty, so multiple command separators in a row are allowed. 
-
-Note2: A command name must start with a letter or an underscore.
 
 ## TODO
 
-* Handle CRLF as a command separator.
+...
