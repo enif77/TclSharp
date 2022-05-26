@@ -116,7 +116,14 @@ void TestTokenizer(string source)
 
 void TestParser(ISourceReader sourceReader)
 {
-    var parser = new Parser();
+    var interpreter = new Interpreter(
+        new ConsoleOutputWriter());
+
+    interpreter.AddPutsCommand();
+    interpreter.AddSetCommand();
+    
+    
+    var parser = new Parser(interpreter);
 
     var parseResult = parser.Parse(sourceReader);
     if (parseResult.IsSuccess == false)
@@ -126,12 +133,7 @@ void TestParser(ISourceReader sourceReader)
         return;
     }
    
-    var interpreter = new Interpreter(
-        new ConsoleOutputWriter());
-
-    interpreter.AddPutsCommand();
-    interpreter.AddSetCommand();
-
+    
     var executeResult = interpreter.Execute(parseResult.Data!);
     Console.WriteLine((executeResult.IsSuccess)
         ? "-> {0}."

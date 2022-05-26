@@ -12,7 +12,7 @@ public class Parser_Tests
     [Fact]
     public void NullSourceReaderIsNotValid()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
         
         Assert.Throws<ArgumentNullException>(() => p.Parse(null));
     }
@@ -20,7 +20,7 @@ public class Parser_Tests
     [Fact]
     public void EmptySourceIsValid()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         Assert.True(p.Parse(new StringSourceReader(string.Empty)).IsSuccess);
     }
@@ -28,7 +28,7 @@ public class Parser_Tests
     [Fact]
     public void EmptySourceIsParsedToEmptyScript()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
         var s = p.Parse(new StringSourceReader(string.Empty)).Data;
 
         Assert.NotNull(s);
@@ -39,7 +39,7 @@ public class Parser_Tests
     [Fact]
     public void EmptyCommandIsValid()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         Assert.True(p.Parse(new StringSourceReader(";")).IsSuccess);
     }
@@ -47,7 +47,7 @@ public class Parser_Tests
     [Fact]
     public void EmptyCommandProducesNoScriptCommand()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader(";")).Data;
         
@@ -57,7 +57,7 @@ public class Parser_Tests
     [Fact]
     public void SimpleWordCommandProducesSingleScriptCommand()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test")).Data;
         
@@ -68,7 +68,7 @@ public class Parser_Tests
     [Fact]
     public void MultipleWordCommandProducesSingleScriptCommandWithArguments()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test arg1 arg2")).Data;
         
@@ -80,7 +80,7 @@ public class Parser_Tests
     [Fact]
     public void FirstWordIsScriptCommandNameAndFirstArgument()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test")).Data;
         
@@ -91,7 +91,7 @@ public class Parser_Tests
     [Fact]
     public void MultipleWordCommandProducesMultipleScriptCommand()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test1;test2")).Data;
         
@@ -102,7 +102,7 @@ public class Parser_Tests
     [Fact]
     public void SemicolonIsCommandSeparator()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test1;test2")).Data;
         
@@ -113,7 +113,7 @@ public class Parser_Tests
     [Fact]
     public void NewlineIsCommandSeparator()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test1\ntest2")).Data;
         
@@ -124,7 +124,7 @@ public class Parser_Tests
     [Fact]
     public void EscapedNewlineIsNotCommandSeparator()
     {
-        var p = new Parser();
+        var p = new Parser(new Interpreter(new NullOutputWriter()));
 
         var s = p.Parse(new StringSourceReader("test1\\\ntest2")).Data;
         

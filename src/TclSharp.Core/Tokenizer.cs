@@ -84,7 +84,7 @@ public class Tokenizer : ITokenizer
                             return ErrorToken(extractBracketedWordResult.Message);
                         }
                         
-                        return CurrentToken = BracketedWordToken(extractBracketedWordResult.Data!);
+                        return CurrentToken = WordToken(extractBracketedWordResult.Data!);
                     }
                     wordSb.Append((char) c);
                     break;
@@ -181,10 +181,6 @@ public class Tokenizer : ITokenizer
     }
 
 
-    // private static IToken WordToken(string word)
-    //     => new Token(TokenCode.Word, word);
-   
-    
     private static IToken WordToken(string word)
     {
         var tok = new Token(TokenCode.Word, "word");
@@ -193,17 +189,7 @@ public class Tokenizer : ITokenizer
         
         return tok;
     }
-
-    
-    private static IToken BracketedWordToken(string word)
-    {
-        var tok = new Token(TokenCode.Word, "bracketed-word");
-
-        tok.Children.Add(new Token(TokenCode.Text, word));
-        
-        return tok;
-    }
-    
+   
     
     private static IToken ErrorToken(string msg)
         => new Token(TokenCode.Unknown, msg);
@@ -259,7 +245,7 @@ public class Tokenizer : ITokenizer
     
     private IResult<string> ExtractBracketedWord()
     {
-        var wordSb = new StringBuilder("{");
+        var wordSb = new StringBuilder();
 
         var bracketLevel = 1;
         var c = NextChar();
@@ -280,8 +266,6 @@ public class Tokenizer : ITokenizer
                     bracketLevel--;
                     if (bracketLevel == 0)
                     {
-                        wordSb.Append('}');
-                        
                         return CheckWordEnd(NextChar(), wordSb);
                     }
                     break;

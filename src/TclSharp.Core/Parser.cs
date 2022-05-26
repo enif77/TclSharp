@@ -1,5 +1,8 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
+using TclSharp.Core.CommandArgumentValues;
+using TclSharp.Core.Extensions;
+
 namespace TclSharp.Core;
 
 using TclSharp.Core.Results;
@@ -10,6 +13,15 @@ using TclSharp.Core.Results;
 /// </summary>
 public class Parser : IParser
 {
+    private readonly IInterpreter _interpreter;
+
+    
+    public Parser(IInterpreter interpreter)
+    {
+        _interpreter = interpreter ?? throw new ArgumentNullException(nameof(interpreter));
+    }
+
+
     public IResult<IScript> Parse(ISourceReader sourceReader)
     {
         if (sourceReader == null) throw new ArgumentNullException(nameof(sourceReader));
@@ -146,9 +158,7 @@ public class Parser : IParser
             return UnexpectedTokenResult(token, "A word");
         }
 
-        var tokenValue = token.Children[0].StringValue;
-        
-        scriptCommand.Arguments.Add(new CommandArgument(tokenValue));
+        scriptCommand.AddTextArgument(token.Children[0].StringValue);
         
         tokenizer.NextToken();
 

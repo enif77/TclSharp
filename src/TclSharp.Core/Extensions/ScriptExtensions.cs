@@ -20,15 +20,15 @@ public static class ScriptExtensions
     public static IResult<IScriptCommand> AddPutsCommand(this IScript script, string? message = default, bool noNewLine = false)
     {
         var command = new ScriptCommand();
-
-        command.Arguments.Add(new CommandArgument("puts"));
+        
+        command.AddTextArgument("puts");
         
         if (noNewLine)
         {
-            command.Arguments.Add(new CommandArgument("-nonewline"));
+            command.AddTextArgument("-nonewline");
         }
 
-        command.Arguments.Add(new CommandArgument(message ?? string.Empty));
+        command.AddTextArgument(message ?? string.Empty);
         
         return script.AddCommand(command);
     }
@@ -44,12 +44,12 @@ public static class ScriptExtensions
     {
         var command = new ScriptCommand();
 
-        command.Arguments.Add(new CommandArgument("set"));
-        command.Arguments.Add(new CommandArgument(variableName));
+        command.AddTextArgument("set");
+        command.AddTextArgument(variableName);
 
         if (value != null)
         {
-            command.Arguments.Add(new CommandArgument(value));
+            command.AddTextArgument(value);
         }
 
         return script.AddCommand(command);
