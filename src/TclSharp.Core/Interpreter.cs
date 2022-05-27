@@ -2,8 +2,6 @@
 
 namespace TclSharp.Core;
 
-using System.Text;
-
 using TclSharp.Core.Results;
 
 
@@ -49,58 +47,11 @@ public class Interpreter : IInterpreter
 
     public IResult<string> InterpretCommandArgument(ICommandArgument argument)
     {
-        var interpretCommandValue = argument.Interpret(this);
-        if (interpretCommandValue.IsSuccess == false)
-        {
-            return interpretCommandValue;
-        }
-
-        var value = interpretCommandValue.Data ?? string.Empty;
+        var interpretCommandArgumentResult = argument.Interpret(this);
         
-        
-        // TODO: Replace code below with the argument.Interpret() call.
-
-        
-        var sb = new StringBuilder(value.Length);
-
-        var reader = new StringSourceReader(value);
-        
-        var c = reader.NextChar();
-        while (c >= 0)
-        {
-            if (c == '$')
-            {
-                var substituteVariableResult = SubstituteVariable(reader);
-                if (substituteVariableResult.IsSuccess == false)
-                {
-                    return substituteVariableResult;
-                }
-
-                sb.Append(substituteVariableResult.Data!);
-                c = reader.CurrentChar;
-                
-                continue;
-            }
-
-            // if (c == '[')
-            // {
-            //     var substituteCommandResult = SubstituteCommand(reader);
-            //     if (substituteCommandResult.IsSuccess == false)
-            //     {
-            //         return substituteCommandResult;
-            //     }
-            //
-            //     sb.Append(substituteCommandResult.Data!);
-            //     c = reader.CurrentChar;
-            //     
-            //     continue;
-            // }
-
-            sb.Append((char)c);
-            c = reader.NextChar();
-        }
-
-        return Result<string>.Ok(sb.ToString(), null);
+        return interpretCommandArgumentResult.IsSuccess == false
+            ? interpretCommandArgumentResult
+            : Result<string>.Ok(interpretCommandArgumentResult.Data ?? string.Empty, null);
     }
 
     #endregion
@@ -164,66 +115,4 @@ public class Interpreter : IInterpreter
     
     private readonly IDictionary<string, ICommandImplementation> _commandImplementations;
     private readonly IDictionary<string, string> _variables;
-    
-    
-    private IResult<string> SubstituteVariable(ISourceReader reader)
-    {
-        var c = reader.NextChar();  // Eat '$' 
-        if (c < 0)
-        {
-            return Result<string>.Error("Unexpected '$' at the end of the script.");
-        }
-
-        var nameSb = new StringBuilder();
-
-        // ${name} = any-char-except '}'
-        if (c == '{')
-        {
-            c = reader.NextChar();  // Eat '{'.
-            while (c >= 0)
-            {
-                if (c == '}')
-                {
-                    reader.NextChar();
-                    
-                    break;
-                }
-
-                nameSb.Append((char)c);
-                c = reader.NextChar();
-            }
-        }
-        else
-        {
-            // $name = $A-Z,a-z,0-9,_
-            while (c >= 0)
-            {
-                if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
-                {
-                    nameSb.Append((char)c);
-                    c = reader.NextChar();
-                    
-                    continue;
-                }
-
-                break;
-            }
-        }
-        
-        return (nameSb.Length == 0)
-            ? Result<string>.Error("A variable name expected.")
-            : Result<string>.Ok(GetVariableValue(nameSb.ToString()), null);
-    }
-
-
-    private IResult<string> SubstituteCommand(ISourceReader reader)
-    {
-        var c = reader.NextChar();  // Eat '[' 
-        if (c < 0)
-        {
-            return Result<string>.Error("Unexpected '[' at the end of the word.");
-        }
-
-        return Result<string>.Error("Command substitution not supported.");
-    }
 }

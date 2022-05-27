@@ -24,6 +24,11 @@ public enum TokenCode
     Text,
     
     /// <summary>
+    /// A $variable substitution.
+    /// </summary>
+    VariableSubstitution,
+    
+    /// <summary>
     /// '\n' or ';'.
     /// </summary>
     CommandSeparator,

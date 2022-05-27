@@ -2,7 +2,7 @@
 
 namespace TclSharp.Core;
 
-using TclSharp.Core.Extensions;
+using TclSharp.Core.CommandArgumentValues;
 using TclSharp.Core.Results;
 
 
@@ -156,7 +156,26 @@ public class Parser : IParser
             return UnexpectedTokenResult(token, "A word");
         }
 
-        scriptCommand.AddTextArgument(token.Children[0].StringValue);
+        var commandArgument = new CommandArgument(_interpreter);
+
+        foreach (var childToken in token.Children)
+        {
+            switch (childToken.Code)
+            {
+                case TokenCode.Text:
+                    commandArgument.AddValue(new TextCommandArgumentValue(childToken.StringValue));
+                    break;
+                
+                case TokenCode.VariableSubstitution:
+                    commandArgument.AddValue(new VariableSubstitutionCommandArgumentValue(childToken.StringValue));
+                    break;
+                
+                default:
+                    return UnexpectedTokenResult(token, "A text or a variable substitution");
+            }
+        }
+        
+        scriptCommand.Arguments.Add(commandArgument);
         
         tokenizer.NextToken();
 
