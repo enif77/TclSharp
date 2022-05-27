@@ -169,10 +169,8 @@ public class Tokenizer : ITokenizer
     
     
     private static IToken WordToken(string text) => WordToken(TextToken(text));
-    
-    
 
-
+    
     private static IToken ErrorToken(string msg)
         => new Token(TokenCode.Unknown, msg);
 
@@ -252,7 +250,8 @@ public class Tokenizer : ITokenizer
             case 'v' : return 0xB;
             case '\\' : return '\\';
             
-            default: return c;
+            default:
+                return c;
         }
     }
     
