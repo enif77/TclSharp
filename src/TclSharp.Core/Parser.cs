@@ -156,7 +156,7 @@ public class Parser : IParser
             return UnexpectedTokenResult(token, "A word");
         }
 
-        var commandArgument = new CommandArgument(_interpreter);
+        var commandArgument = new CommandArgument();
 
         foreach (var childToken in token.Children)
         {

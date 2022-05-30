@@ -26,19 +26,6 @@ public class CommandArgument : ICommandArgument
             return sb.ToString();
         }
     }
-    
-    
-    /// <summary>
-    /// Constructor. 
-    /// </summary>
-    /// <param name="interpreter">An IInterpreter used for evaluating this argument's values.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the interpreter parameter is null.</exception>
-    public CommandArgument(IInterpreter interpreter)
-    {
-        _interpreter = interpreter ?? throw new ArgumentNullException(nameof(interpreter));
-        
-        _values = new List<ICommandArgumentValue>();
-    }
 
 
     public void AddValue(ICommandArgumentValue value)
@@ -68,6 +55,5 @@ public class CommandArgument : ICommandArgument
     }
 
 
-    private readonly IInterpreter _interpreter;
-    private readonly IList<ICommandArgumentValue> _values;
+    private readonly IList<ICommandArgumentValue> _values = new List<ICommandArgumentValue>();
 }
