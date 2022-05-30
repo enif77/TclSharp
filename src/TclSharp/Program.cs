@@ -31,6 +31,24 @@ const string scriptsFolderPath = "../../../../../scripts/";
 TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl"));
 
 
+//TestParser(new StringSourceReader("set v XXX; set vv aaa[set v]bbb;puts $vv"));
+//TestParser(new StringSourceReader("set v XXX; puts [set v]"));
+//TestParser(new StringSourceReader("set v XXX; puts ${v}x"));
+// TestParser(new StringSourceReader("set v XXX; puts \"${v}\""));
+// TestParser(new StringSourceReader("set v XXX; puts \"${v}xxx\""));
+// TestParser(new StringSourceReader("set v XXX; puts \"xxx${v}\""));
+// TestParser(new StringSourceReader("set v XXX; puts xxx\"\"xxx"));
+// TestParser(new StringSourceReader("set v XXX; puts xxx${v}"));
+// TestParser(new StringSourceReader("set v XXX; puts xxx${v}xxx"));
+// TestParser(new StringSourceReader("set v XXX; puts ${v}xxx"));
+// TestParser(new StringSourceReader("set v XXX; puts ${v}"));
+//TestParser(new StringSourceReader("set v XXX; puts xxx[set v]"));
+//TestParser(new StringSourceReader("set v XXX; puts [set v]xxx"));
+//TestParser(new StringSourceReader("set v XXX; puts xxx[set v]xxx"));
+//TestParser(new StringSourceReader("set v XXX; puts [set v]"));
+//TestParser(new StringSourceReader("set v XXX; set vv YYY; puts [set v [set vv]]; puts $v"));
+
+
 Console.WriteLine("DONE");
 
 

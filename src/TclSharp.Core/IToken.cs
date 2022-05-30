@@ -29,6 +29,11 @@ public enum TokenCode
     VariableSubstitution,
     
     /// <summary>
+    /// A [command ...] substitution.
+    /// </summary>
+    CommandSubstitution,
+    
+    /// <summary>
     /// '\n' or ';'.
     /// </summary>
     CommandSeparator,

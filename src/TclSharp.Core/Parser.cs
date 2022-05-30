@@ -170,8 +170,12 @@ public class Parser : IParser
                     commandArgument.AddValue(new VariableSubstitutionCommandArgumentValue(childToken.StringValue));
                     break;
                 
+                case TokenCode.CommandSubstitution:
+                    commandArgument.AddValue(new CommandSubstitutionCommandArgumentValue(childToken.StringValue));
+                    break;
+                
                 default:
-                    return UnexpectedTokenResult(token, "A text or a variable substitution");
+                    return UnexpectedTokenResult(token, "A text or a variable or command substitution");
             }
         }
         

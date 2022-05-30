@@ -1,7 +1,7 @@
 ﻿set {bad var name} {Hello}
 set v 123
-puts "[set {bad var name}], world!"
-puts [set {bad ${v}ar name}] world!
+puts "-x-[set {bad var name}]-x-, world!"
+puts "-y-[set {bad ${v}ar name}]-y- world!"
 
 set v XXX
 puts $v

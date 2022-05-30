@@ -49,11 +49,14 @@ public class Tokenizer : ITokenizer
                 // Are we extracting a word now?
                 if (wordPartSb == null)
                 {
-                    // No, so consume the command separator char...
-                    _reader.NextChar();
+                    if (wordTok == null)
+                    {
+                        // No, so consume the command separator char...
+                        _reader.NextChar();
                         
-                    // and return the EofC token.
-                    return CurrentToken = _commandSeparatorToken;
+                        // and return the EofC token.
+                        return CurrentToken = _commandSeparatorToken;
+                    }
                 }
                 
                 // A command separator ends a word. We'll return it below.
@@ -66,12 +69,10 @@ public class Tokenizer : ITokenizer
                     if (wordPartSb == null)
                     {
                         var extractQuotedWordResult = ExtractQuotedWord();
-                        if (extractQuotedWordResult.IsSuccess == false)
-                        {
-                            return ErrorToken(extractQuotedWordResult.Message);
-                        }
                         
-                        return CurrentToken = extractQuotedWordResult.Data!;    
+                        return extractQuotedWordResult.IsSuccess
+                            ? CurrentToken = extractQuotedWordResult.Data!
+                            : CurrentToken = ErrorToken(extractQuotedWordResult.Message);
                     }
                     wordPartSb.Append((char) c);
                     break;
@@ -80,27 +81,38 @@ public class Tokenizer : ITokenizer
                     if (wordPartSb == null)
                     {
                         var extractBracketedWordResult = ExtractBracketedWord();
-                        if (extractBracketedWordResult.IsSuccess == false)
-                        {
-                            return ErrorToken(extractBracketedWordResult.Message);
-                        }
                         
-                        return CurrentToken = extractBracketedWordResult.Data!;
+                        return extractBracketedWordResult.IsSuccess
+                            ? CurrentToken = extractBracketedWordResult.Data!
+                            : CurrentToken = ErrorToken(extractBracketedWordResult.Message);
                     }
                     wordPartSb.Append((char) c);
                     break;
                 
-                // case '[':
-                //     var extractCommandSubstitutionWordResult = ExtractCommandSubstitutionWord();
-                //     if (extractCommandSubstitutionWordResult.IsSuccess == false)
-                //     {
-                //         return ErrorToken(extractCommandSubstitutionWordResult.Message);
-                //     }
-                //     wordPartSb ??= new StringBuilder();
-                //     wordPartSb.Append(extractCommandSubstitutionWordResult.Data!);
-                //     break;
+                case '[':
+                    if (wordPartSb != null && wordPartSb.Length > 0)
+                    {
+                        wordTok ??= WordToken();
+                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+                        wordPartSb = new StringBuilder();
+                    }
+                    var extractCommandSubstitutionResult = ExtractCommandSubstitution();
+                    if (extractCommandSubstitutionResult.IsSuccess == false)
+                    {
+                        return ErrorToken(extractCommandSubstitutionResult.Message);
+                    }
+                    wordTok ??= WordToken();
+                    wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
+                    c = _reader.CurrentChar;
+                    continue;
                 
                 case '$':
+                    if (wordPartSb != null && wordPartSb.Length > 0)
+                    {
+                        wordTok ??= WordToken();
+                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+                        wordPartSb = new StringBuilder();
+                    }
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
@@ -108,7 +120,8 @@ public class Tokenizer : ITokenizer
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
-                    break;
+                    c = _reader.CurrentChar;
+                    continue;
                 
                 default:
                     wordPartSb ??= new StringBuilder();
@@ -192,36 +205,49 @@ public class Tokenizer : ITokenizer
                 case '$':
                     if (wordSb.Length > 0)
                     {
+                        // Add the "prefix" as a child token to the current word.
                         wordTok.Children.Add(TextToken(wordSb.ToString()));
                         wordSb = new StringBuilder();
                     }
-                    
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
                         return extractVariableSubstitutionResult;
                     }
-
-                    // We can be at the '\' char, so we must process it here.
-                    c = (_reader.CurrentChar == '\\')
-                        ? EscapeQuotedWordChar(wordSb)
-                        : _reader.CurrentChar;
-                    
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
-                    break;
+                    
+                    // Here we are at char behind the variable substitution.
+                    // We want to process it as if the variable substitution was not here...
+                    c = _reader.CurrentChar;
+                    continue;
+                
+                case '[':
+                    if (wordSb.Length > 0)
+                    {
+                        wordTok.Children.Add(TextToken(wordSb.ToString()));
+                        wordSb = new StringBuilder();
+                    }
+                    var extractCommandSubstitutionResult = ExtractCommandSubstitution();
+                    if (extractCommandSubstitutionResult.IsSuccess == false)
+                    {
+                        return extractCommandSubstitutionResult;
+                    }
+                    wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
+                    c = _reader.CurrentChar;
+                    continue;
                 
                 case '"':
-                    if (IsWordEnd(_reader.NextChar()))
+                    if (IsWordEnd(_reader.NextChar()) == false)
                     {
-                        if (wordSb.Length > 0)
-                        {
-                            wordTok.Children.Add(TextToken(wordSb.ToString()));
-                        }
-
-                        return Result<IToken>.Ok(wordTok);
+                        return Result<IToken>.Error("An EoF, words or commands separator expected after the quoted word.");
                     }
-                    
-                    return Result<IToken>.Error("An EoF, words or commands separator expected.");
+
+                    if (wordSb.Length > 0)
+                    {
+                        // Add the "postfix" as a child token to the current word.
+                        wordTok.Children.Add(TextToken(wordSb.ToString()));
+                    }
+                    return Result<IToken>.Ok(wordTok);
             }
 
             wordSb.Append((char) c);
@@ -308,56 +334,57 @@ public class Tokenizer : ITokenizer
     }
     
     
-    // private IResult<string> ExtractCommandSubstitutionWord()
-    // {
-    //     var wordSb = new StringBuilder("[");
-    //
-    //     var bracketLevel = 1;
-    //     var c = NextChar();
-    //     while (IsEoF(c) == false)
-    //     {
-    //         switch (c)
-    //         {
-    //             case '\\':
-    //                 c = EscapeSquareBracketedWordChar(wordSb);
-    //                 break;
-    //             
-    //             case '[':
-    //                 bracketLevel++;
-    //                 break;
-    //             
-    //             case ']':
-    //             {
-    //                 bracketLevel--;
-    //                 if (bracketLevel == 0)
-    //                 {
-    //                     wordSb.Append(']');
-    //                     
-    //                     return Result<string>.Ok(wordSb.ToString(), null);
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //
-    //         wordSb.Append((char) c);
-    //         
-    //         c = NextChar();
-    //     }
-    //
-    //     return Result<string>.Error("The bracketed word end character ']' expected.");
-    // }
-    //
-    //
-    // private int EscapeSquareBracketedWordChar(StringBuilder wordSb)
-    // {
-    //     var c = NextChar();
-    //     if (c != '[' && c != ']')
-    //     {
-    //         wordSb.Append('\\');
-    //     }
-    //
-    //     return c;
-    // }
+    private IResult<IToken> ExtractCommandSubstitution()
+    {
+        var wordSb = new StringBuilder();
+    
+        var bracketLevel = 1;
+        var c = _reader.NextChar();
+        while (IsEoF(c) == false)
+        {
+            switch (c)
+            {
+                case '\\':
+                    c = EscapeSquareBracketedWordChar(wordSb);
+                    break;
+                
+                case '[':
+                    bracketLevel++;
+                    break;
+                
+                case ']':
+                {
+                    bracketLevel--;
+                    if (bracketLevel == 0)
+                    {
+                        // Eat ']'.
+                        _reader.NextChar();
+                        
+                        return Result<IToken>.Ok(new Token(TokenCode.CommandSubstitution, wordSb.ToString()));
+                    }
+                    break;
+                }
+            }
+           
+            wordSb.Append((char) c);
+            
+            c = _reader.NextChar();
+        }
+    
+        return Result<IToken>.Error("The command substitution end character ']' expected.");
+    }
+    
+    
+    private int EscapeSquareBracketedWordChar(StringBuilder wordSb)
+    {
+        var c = _reader.NextChar();
+        if (c != '[' && c != ']')
+        {
+            wordSb.Append('\\');
+        }
+    
+        return c;
+    }
 
 
     private IResult<IToken> ExtractVariableSubstitution()
@@ -378,6 +405,7 @@ public class Tokenizer : ITokenizer
             {
                 if (c == '}')
                 {
+                    // Eat '}'.
                     _reader.NextChar();
                     
                     break;
