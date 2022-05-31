@@ -185,33 +185,6 @@ public class Parser : IParser
 
         return Result<string>.Ok();
     }
-    
-    /// <summary>
-    /// Parses a basic-word.
-    /// basic-word :: char { chars } .
-    /// </summary>
-    private IResult<string> ParseSimpleWord(ITokenizer tokenizer, ICommandArgument commandArgument)
-    {
-        return Result<string>.Error($"The basic-word parsing is not implemented yet.");
-    }
-    
-    /// <summary>
-    /// Parses a quoted-word.
-    /// quoted-word :: '"' { chars } '"' .
-    /// </summary>
-    private IResult<string> ParseQuotedWord(ITokenizer tokenizer, ICommandArgument commandArgument)
-    {
-        return Result<string>.Error($"The quoted-word parsing is not implemented yet.");
-    }
-    
-    /// <summary>
-    /// Parses a bracketed-word.
-    /// bracketed-word :: '{' { chars } '}' .
-    /// </summary>
-    private IResult<string> ParseBracketedWord(ITokenizer tokenizer, ICommandArgument commandArgument)
-    {
-        return Result<string>.Error($"The bracketed-word parsing is not implemented yet.");
-    }
 
 
     private static IResult<string> UnexpectedTokenResult(IToken token, string expectedToken)

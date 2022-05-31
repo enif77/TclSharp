@@ -21,9 +21,11 @@ A TCL implementation for .NET in C#.
 ### Tokens
 
 * EoF - An end of file/source indicator.
-* CommandSeparator - A new line or semicolon.
+* CommandSeparator - The new line or the semicolon character.
 * Word - A command name or argument.
 * Text - A bunch of characters but white space or any special chars.
+* VariableSubstitution - A $variable or a ${variable} substitution.
+* CommandSubstitution - A \[command args...] substitution.
 
 ### Script
 
@@ -40,18 +42,23 @@ A command can be empty, so multiple command separators in a row are allowed.
 
 ### Words
 
-...
+Words are non-white characters separated by white characters. Can be grouped together using double quotes (`" ... "`) or
+brackets (`{ ... }`).
+
+All words can contain substitutions - variable, escaped characters or command substitution. Substitutions in bracketed words
+are not processed.
 
 
 ### BNF
 
-* ::  - definition start.
-* .   - end of definition.
-* \[] - optional part.
+* ::  - a definition start.
+* .   - the end of a definition.
+* \[] - an optional part.
 * {}  - 0 or more repetitions.
 * \|  - or.
+* ..  - a range (from '0' to '9').
 * 'c' - a specific character.
-* EoF - the end of a file marker (int -1). 
+* EoF - the end of the file marker (int -1). 
 
 ````
 script :: [ commands ] EoF .
@@ -62,8 +69,16 @@ word :: basic-word | quoted-word | bracketed-word .
 basic-word :: basic-word-element { basic-word-element } .
 basic-word-element :: text | variable-substitution | command-substitution .
 text :: any char but white-space or command-separator .
-quoted-word :: '"' { any allowed char | variable-substitution | command-substitution } '"' .
-bracketed-word :: '{' any allowed char '}' .
+variable-substitution :: '$' variable-name | '$' '{' text '}' .
+variable-name :: digits | alphabet-chars | '_' .
+digits :: '0' .. '9' .
+alphabet-chars :: 'a' .. 'z' | 'A' .. 'Z' .
+command-substitution :: '[' any allowed char | escaped-command-substitution-chars ']' .
+escaped-command-substitution-chars :: '\[' | '\]' .
+quoted-word :: '"' { any allowed char | escaped-char | variable-substitution | command-substitution } '"' .
+escaped-char :: '\' char .
+bracketed-word :: '{' any allowed char | escaped-bracketed-word-char '}' .
+escaped-bracketed-word-char :: '\{' | '\}' .
 white-space :: any unicode white space char but '\n' .
 ````
 
