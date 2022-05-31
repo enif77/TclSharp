@@ -26,7 +26,7 @@ public class Tokenizer : ITokenizer
         IToken? wordTok = null;
         StringBuilder? wordPartSb = null;
         
-        // At what char we were last time?
+        // At what char we were the last time?
         var c = _reader.CurrentChar;
         while (IsEoF(c) == false)
         {
@@ -44,7 +44,7 @@ public class Tokenizer : ITokenizer
                 break;
             }
 
-            if (IsWordsSeparator(c))
+            if (IsCommandsSeparator(c))
             {
                 // Are we extracting a word now?
                 if (wordPartSb == null)
@@ -59,7 +59,7 @@ public class Tokenizer : ITokenizer
                     }
                 }
                 
-                // A command separator ends a word. We'll return it below.
+                // A commands separator ends a word. We'll return it below.
                 break;
             }
 
@@ -155,13 +155,13 @@ public class Tokenizer : ITokenizer
         => c < 0;
     
     private static bool IsWhiteSpace(int c)
-        => IsWordsSeparator(c) == false && char.IsWhiteSpace((char)c);
+        => IsCommandsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
 
     private static bool IsWordEnd(int c)
-        => IsEoF(c) || IsWordsSeparator(c) || IsWhiteSpace(c);
+        => IsEoF(c) || IsCommandsSeparator(c) || IsWhiteSpace(c);
     
-    private static bool IsWordsSeparator(int c)
+    private static bool IsCommandsSeparator(int c)
         => c is '\n' or ';';
 
     
@@ -246,6 +246,12 @@ public class Tokenizer : ITokenizer
                     {
                         // Add the "postfix" as a child token to the current word.
                         wordTok.Children.Add(TextToken(wordSb.ToString()));
+                    }
+
+                    if (wordTok.Children.Count == 0)
+                    {
+                        // Add the "" as a child token to the current word.
+                        wordTok.Children.Add(TextToken(string.Empty));
                     }
                     return Result<IToken>.Ok(wordTok);
             }
