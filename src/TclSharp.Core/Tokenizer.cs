@@ -343,7 +343,8 @@ public class Tokenizer : ITokenizer
     private IResult<IToken> ExtractCommandSubstitution()
     {
         var wordSb = new StringBuilder();
-    
+
+        var inQuotedWord = false;
         var bracketLevel = 1;
         var c = _reader.NextChar();
         while (IsEoF(c) == false)
@@ -351,22 +352,34 @@ public class Tokenizer : ITokenizer
             switch (c)
             {
                 case '\\':
-                    c = EscapeSquareBracketedWordChar(wordSb);
+                    // This allows to parse the "x\"x" string to the x"x string. 
+                    wordSb.Append('\\');
+                    c = _reader.NextChar();
+                    break;
+                
+                case '"':
+                    inQuotedWord = !inQuotedWord;
                     break;
                 
                 case '[':
-                    bracketLevel++;
+                    if (inQuotedWord == false)
+                    {
+                        bracketLevel++;    
+                    }
                     break;
                 
                 case ']':
                 {
-                    bracketLevel--;
-                    if (bracketLevel == 0)
+                    if (inQuotedWord == false)
                     {
-                        // Eat ']'.
-                        _reader.NextChar();
+                        bracketLevel--;
+                        if (bracketLevel == 0)
+                        {
+                            // Eat ']'.
+                            _reader.NextChar();
                         
-                        return Result<IToken>.Ok(new Token(TokenCode.CommandSubstitution, wordSb.ToString()));
+                            return Result<IToken>.Ok(new Token(TokenCode.CommandSubstitution, wordSb.ToString()));
+                        }
                     }
                     break;
                 }
@@ -378,18 +391,6 @@ public class Tokenizer : ITokenizer
         }
     
         return Result<IToken>.Error("The command substitution end character ']' expected.");
-    }
-    
-    
-    private int EscapeSquareBracketedWordChar(StringBuilder wordSb)
-    {
-        var c = _reader.NextChar();
-        if (c != '[' && c != ']')
-        {
-            wordSb.Append('\\');
-        }
-    
-        return c;
     }
 
 

@@ -4,7 +4,7 @@ using TclSharp.Core;
 using TclSharp.Core.Extensions;
 
 
-Console.WriteLine("TclSharp v0.0.8");
+Console.WriteLine("TclSharp v0.0.10");
 
 // TestInterpreter();
 //
@@ -28,7 +28,7 @@ const string scriptsFolderPath = "../../../../../scripts/";
 // TestParser(new FileSourceReader(scriptsFolderPath + "braces-nl-escapes.tcl"));
 // TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-braces-no-subst.tcl"));
 // TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-quotes-with-subst.tcl"));
-TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl"));
+// TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl"));
 
 
 //TestParser(new StringSourceReader("set v XXX; set vv aaa[set v]bbb;puts $vv"));
@@ -47,6 +47,12 @@ TestParser(new FileSourceReader(scriptsFolderPath + "hello-world-cmd-subst.tcl")
 //TestParser(new StringSourceReader("set v XXX; puts xxx[set v]xxx"));
 //TestParser(new StringSourceReader("set v XXX; puts [set v]"));
 //TestParser(new StringSourceReader("set v XXX; set vv YYY; puts [set v [set vv]]; puts $v"));
+
+//TestParser(new StringSourceReader("puts \"[ set v \"xxx\"]\""));   // -> xxx
+//TestParser(new StringSourceReader("puts \"[ set v \"x]x\" ]\""));  // -> x]x
+//TestParser(new StringSourceReader("puts \"[ set v \"x\\[x\" ]\""));  // -> x[x
+//TestParser(new StringSourceReader("puts \"[ set v \"x]\\\"x\" ]\""));  // -> x]"x
+TestParser(new StringSourceReader("puts \"[ set v \"x\\\"x\" ]\""));  // -> x"x
 
 
 Console.WriteLine("DONE");
