@@ -11,20 +11,20 @@ using TclSharp.Core.Results;
 public interface ICommandArgument
 {
     /// <summary>
-    /// An unprocessed argument value.
+    /// All unprocessed argument value parts combined to a string.
     /// </summary>
     string Value { get; }
 
 
     /// <summary>
-    /// Adds a value part to.
+    /// Adds a value part to this ICommandArgument instance.
     /// </summary>
     /// <param name="value">A value.</param>
     /// <exception cref="ArgumentNullException">Thrown when the value parameter is null.</exception>
-    void AddValue(ICommandArgumentValue value);
+    void AddValuePart(ICommandArgumentValue value);
     
     /// <summary>
-    /// Interprets its values and return the resulting value as a string.
+    /// Interprets all value parts and return the resulting value as a string.
     /// </summary>
     /// <param name="interpreter">An interpreter used for this value evaluations.</param>
     /// <returns>Interpreted value.</returns>

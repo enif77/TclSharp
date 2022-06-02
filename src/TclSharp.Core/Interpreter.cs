@@ -29,7 +29,7 @@ public class Interpreter : IInterpreter
 
     public string GetVariableValue(string name)
     {
-        return _variables.ContainsKey(name)
+        return HasVariable(name)
             ? _variables[name]
             : string.Empty;
     }
@@ -67,7 +67,7 @@ public class Interpreter : IInterpreter
 
     public IResult<ICommandImplementation> AddCommandImplementation(string commandName, ICommandImplementation commandImplementation)
     {
-        if (_commandImplementations.ContainsKey(commandName))
+        if (IsKnownCommand(commandName))
         {
             return Result<ICommandImplementation>.Error(commandImplementation, $"The '{commandName}' is already defined.");
         }
@@ -84,7 +84,7 @@ public class Interpreter : IInterpreter
     {
         if (script == null) throw new ArgumentNullException(nameof(script));
         
-        var lastResult = Result<string>.Ok();
+        var lastCommandExecutionResult = Result<string>.Ok();
         foreach (var command in script.Commands)
         {
             var interpretCommandNameResult = InterpretCommandArgument(command.Arguments[0]);
@@ -102,14 +102,14 @@ public class Interpreter : IInterpreter
 
             var commandImplementation = _commandImplementations[commandName];
             
-            lastResult = commandImplementation.Execute(command);
-            if (lastResult.IsSuccess == false)
+            lastCommandExecutionResult = commandImplementation.Execute(command);
+            if (lastCommandExecutionResult.IsSuccess == false)
             {
                 break;
             }
         }
 
-        return lastResult;
+        return lastCommandExecutionResult;
     }
 
     

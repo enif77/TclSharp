@@ -39,7 +39,8 @@ public enum TokenCode
     CommandSeparator,
     
     /// <summary>
-    /// A word (a command name or argument) and "quoted word".
+    /// A word (a command name or an argument) and "quoted word".
+    /// Can have children - Text, VariableSubstitution or CommandSubstitution.
     /// </summary>
     Word
 }
@@ -62,7 +63,7 @@ public interface IToken
 
     /// <summary>
     /// A token can consist of multiple tokens.
-    /// See TokenCode.Word or TokenCode.Command.
+    /// See TokenCode.Word.
     /// </summary>
     IList<IToken> Children { get; }
 }

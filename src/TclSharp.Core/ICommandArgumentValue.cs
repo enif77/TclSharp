@@ -6,7 +6,7 @@ using TclSharp.Core.Results;
 
 
 /// <summary>
-/// Represents a command value.
+/// Represents a part of a command argument value.
 /// </summary>
 public interface ICommandArgumentValue
 {
@@ -17,7 +17,7 @@ public interface ICommandArgumentValue
 
 
     /// <summary>
-    /// Interprets its value and return the resulting value as a string.
+    /// Interprets the Value and return the resulting value as a string.
     /// </summary>
     /// <param name="interpreter">An interpreter used for this value evaluations.</param>
     /// <returns>Interpreted value.</returns>

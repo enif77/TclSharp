@@ -163,15 +163,15 @@ public class Parser : IParser
             switch (childToken.Code)
             {
                 case TokenCode.Text:
-                    commandArgument.AddValue(new TextCommandArgumentValue(childToken.StringValue));
+                    commandArgument.AddValuePart(new TextCommandArgumentValue(childToken.StringValue));
                     break;
                 
                 case TokenCode.VariableSubstitution:
-                    commandArgument.AddValue(new VariableSubstitutionCommandArgumentValue(childToken.StringValue));
+                    commandArgument.AddValuePart(new VariableSubstitutionCommandArgumentValue(childToken.StringValue));
                     break;
                 
                 case TokenCode.CommandSubstitution:
-                    commandArgument.AddValue(new CommandSubstitutionCommandArgumentValue(childToken.StringValue));
+                    commandArgument.AddValuePart(new CommandSubstitutionCommandArgumentValue(childToken.StringValue));
                     break;
                 
                 default:

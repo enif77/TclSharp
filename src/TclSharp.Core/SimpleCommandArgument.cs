@@ -23,7 +23,7 @@ public class SimpleCommandArgument : ICommandArgument
     }
     
     
-    public void AddValue(ICommandArgumentValue value)
+    public void AddValuePart(ICommandArgumentValue value)
     {
         Value = value.Value;
     }

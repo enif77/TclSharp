@@ -28,7 +28,7 @@ public class CommandArgument : ICommandArgument
     }
 
 
-    public void AddValue(ICommandArgumentValue value)
+    public void AddValuePart(ICommandArgumentValue value)
     {
         if (value == null) throw new ArgumentNullException(nameof(value));
 

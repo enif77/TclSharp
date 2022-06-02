@@ -48,8 +48,8 @@ public interface IInterpreter
     /// <summary>
     /// Substitutes variables and commands in a command argument.
     /// </summary>
-    /// <param name="argument">A command arguments.</param>
-    /// <returns>Processed command argument.</returns>
+    /// <param name="argument">A command argument.</param>
+    /// <returns>Processed command argument value.</returns>
     IResult<string> InterpretCommandArgument(ICommandArgument argument);
 
     #endregion
@@ -65,7 +65,7 @@ public interface IInterpreter
     bool IsKnownCommand(string commandName);
     
     /// <summary>
-    /// Adds a command implementation to this instance. 
+    /// Adds a command implementation to this instance. Fails, if such a command implementation already exists.
     /// </summary>
     /// <param name="commandName">A command name.</param>
     /// <param name="commandImplementation">A command implementation.</param>

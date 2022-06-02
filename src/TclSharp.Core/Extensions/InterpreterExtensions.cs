@@ -28,9 +28,9 @@ public static class InterpreterExtensions
        
         var addCommandImplementationResult = interpreter.AddCommandImplementation(putsCommandName, new PutsCommand(interpreter));
         
-        return addCommandImplementationResult.IsSuccess == false
-            ? SimpleResult.Error(addCommandImplementationResult.Message)
-            : SimpleResult.Ok($"The '{putsCommandName}' command implementation added successfully.");
+        return addCommandImplementationResult.IsSuccess
+            ? SimpleResult.Ok($"The '{putsCommandName}' command implementation added successfully.")
+            : SimpleResult.Error(addCommandImplementationResult.Message);
     }
     
     /// <summary>
@@ -51,8 +51,8 @@ public static class InterpreterExtensions
             setCommandName,
             new SetCommand(interpreter));
         
-        return addCommandImplementationResult.IsSuccess == false
-            ? SimpleResult.Error(addCommandImplementationResult.Message)
-            : SimpleResult.Ok($"The '{setCommandName}' command implementation added successfully.");
+        return addCommandImplementationResult.IsSuccess
+            ? SimpleResult.Ok($"The '{setCommandName}' command implementation added successfully.")
+            : SimpleResult.Error(addCommandImplementationResult.Message);
     }
 }
