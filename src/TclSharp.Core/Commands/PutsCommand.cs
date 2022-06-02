@@ -27,7 +27,8 @@ public class PutsCommand : ICommandImplementation
     {
         if (scriptCommand == null) throw new ArgumentNullException(nameof(scriptCommand));
 
-        if (scriptCommand.Arguments.Count == 1)
+        // The first argument is always a command name. So we expect at least two arguments.
+        if (scriptCommand.Arguments.Count <= 1)
         {
             return Result<string>.Error("At least one argument, a message, expected.");
         }
