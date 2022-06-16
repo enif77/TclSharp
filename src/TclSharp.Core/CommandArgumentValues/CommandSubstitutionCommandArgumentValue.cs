@@ -26,7 +26,7 @@ public class CommandSubstitutionCommandArgumentValue : ICommandArgumentValue
         var parseResult = parser.Parse(new StringSourceReader(Value));
         
         return parseResult.IsSuccess
-            ? interpreter.Execute(parseResult.Data!)
+            ? interpreter.Interpret(parseResult.Data!)
             : Result<string>.Error(parseResult.Message);
     }
 }

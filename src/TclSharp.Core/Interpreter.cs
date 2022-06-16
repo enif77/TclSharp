@@ -45,7 +45,7 @@ public class Interpreter : IInterpreter
     
     #region command arguments
 
-    public IResult<string> InterpretCommandArgument(ICommandArgument argument)
+    public IResult<string> Interpret(ICommandArgument argument)
     {
         var interpretCommandArgumentResult = argument.Interpret(this);
         
@@ -80,14 +80,14 @@ public class Interpreter : IInterpreter
     #endregion
 
     
-    public IResult<string> Execute(IScript script)
+    public IResult<string> Interpret(IScript script)
     {
         if (script == null) throw new ArgumentNullException(nameof(script));
         
         var lastCommandExecutionResult = Result<string>.Ok();
         foreach (var command in script.Commands)
         {
-            var interpretCommandNameResult = InterpretCommandArgument(command.Arguments[0]);
+            var interpretCommandNameResult = Interpret(command.Arguments[0]);
             if (interpretCommandNameResult.IsSuccess == false)
             {
                 return interpretCommandNameResult;

@@ -91,7 +91,7 @@ void TestInterpreter()
     interpreter.AddPutsCommand();
     interpreter.AddSetCommand();
 
-    var result = interpreter.Execute(script);
+    var result = interpreter.Interpret(script);
     
     Console.WriteLine("...");
     
@@ -158,7 +158,7 @@ void TestParser(ISourceReader sourceReader)
     }
    
     
-    var executeResult = interpreter.Execute(parseResult.Data!);
+    var executeResult = interpreter.Interpret(parseResult.Data!);
     Console.WriteLine((executeResult.IsSuccess)
         ? "-> {0}."
         : "Executing failed with the '{0}' error.",

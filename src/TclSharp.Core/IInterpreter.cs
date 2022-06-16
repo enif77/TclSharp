@@ -46,11 +46,11 @@ public interface IInterpreter
     #region command arguments
 
     /// <summary>
-    /// Substitutes variables and commands in a command argument.
+    /// Interprets a command value. Substitutes variables and commands in a command argument.
     /// </summary>
     /// <param name="argument">A command argument.</param>
     /// <returns>Processed command argument value.</returns>
-    IResult<string> InterpretCommandArgument(ICommandArgument argument);
+    IResult<string> Interpret(ICommandArgument argument);
 
     #endregion
     
@@ -76,9 +76,9 @@ public interface IInterpreter
     
 
     /// <summary>
-    /// Executes all commands in this instance.
+    /// Interprets a script. Executes all commands in this instance.
     /// </summary>
     /// <param name="script">A script.</param>
     /// <returns>An IResult instance with a string representing the result of this interpreter instance operation.</returns>
-    IResult<string> Execute(IScript script);
+    IResult<string> Interpret(IScript script);
 }
