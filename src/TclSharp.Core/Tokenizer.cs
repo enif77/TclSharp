@@ -60,6 +60,26 @@ public class Tokenizer : ITokenizer
                 break;
             }
 
+            if (IsCommentStart(c))
+            {
+                // Are we extracting a word now?
+                if (wordPartSb == null && wordTok == null)
+                {
+                    // No, so consume the comment start char...
+                    c = _reader.NextChar();
+                        
+                    // and skip all chars till the nearest EoLN or EoF.
+                    while (IsCommentEnd(c) == false)
+                    {
+                        c = _reader.NextChar();
+                    }
+                    
+                    continue;
+                }
+                
+                // A '#' character inside of a word has no special meaning.
+            }
+
             switch (c)
             {
                 case '"':
@@ -154,12 +174,17 @@ public class Tokenizer : ITokenizer
     private static bool IsWhiteSpace(int c)
         => IsCommandsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
-
     private static bool IsWordEnd(int c)
         => IsEoF(c) || IsCommandsSeparator(c) || IsWhiteSpace(c);
     
     private static bool IsCommandsSeparator(int c)
         => c is '\n' or ';';
+    
+    private static bool IsCommentStart(int c)
+        => c is '#';
+    
+    private static bool IsCommentEnd(int c)
+        => c == '\n' || IsEoF(c);
 
     
     private static IToken TextToken(string text) => new Token(TokenCode.Text, text);

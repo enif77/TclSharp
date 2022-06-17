@@ -48,6 +48,11 @@ brackets (`{ ... }`).
 All words can contain substitutions - variable, escaped characters or command substitution. Substitutions in bracketed words
 are not processed.
 
+### Comments.
+
+If a hash character (`#`) appears at a point where Tcl is expecting the first character of the first word of a command,
+then the hash character and the characters that follow it, up through the next newline, are treated as a comment and ignored.
+The comment character only has significance when it appears at the beginning of a command.
 
 ### BNF
 

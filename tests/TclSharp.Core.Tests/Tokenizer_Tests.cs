@@ -1,5 +1,7 @@
 /* TclSharp - (C) 2022 Premysl Fara */
 
+using System.Collections.Generic;
+
 namespace TclSharp.Core.Tests;
 
 using System;
@@ -189,6 +191,37 @@ public class Tokenizer_Tests
     #endregion
 
 
+    #region comments
+
+    [Theory]
+    [InlineData("#comment", new[] { TokenCode.EoF }) ]
+    [InlineData("# comment", new[] { TokenCode.EoF })]
+    [InlineData("#", new[] { TokenCode.EoF })]
+    [InlineData("word ; # comment", new[] {TokenCode.Word, TokenCode.CommandSeparator, TokenCode.EoF })]
+    [InlineData("word ; # comment\n123", new[] {TokenCode.Word, TokenCode.CommandSeparator, TokenCode.CommandSeparator, TokenCode.Word, TokenCode.EoF })]
+    [InlineData("word\n# comment\n123", new[] {TokenCode.Word, TokenCode.CommandSeparator, TokenCode.CommandSeparator, TokenCode.Word, TokenCode.EoF })]
+    [InlineData("word-with# word", new[] { TokenCode.Word, TokenCode.Word, TokenCode.EoF })]
+    [InlineData("word#with word", new[] { TokenCode.Word, TokenCode.Word, TokenCode.EoF })]
+    [InlineData("word #word", new[] { TokenCode.Word, TokenCode.Word, TokenCode.EoF })]
+    [InlineData("word # word", new[] { TokenCode.Word, TokenCode.Word, TokenCode.Word, TokenCode.EoF })]
+    public void CommentsAreRecognizedAndSkipped(string source, TokenCode[] tokens)
+    {
+        var t = new Tokenizer(new StringSourceReader(source));
+        
+        var i = 0;
+        var tok = t.NextToken();
+        while (tok.Code != TokenCode.EoF)
+        {
+            Assert.Equal(tokens[i], tok.Code);
+
+            i++;
+            tok = t.NextToken();
+        }
+    }
+
+    #endregion
+    
+    
     #region quoted strings
 
     [Theory]
