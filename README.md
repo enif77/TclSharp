@@ -60,16 +60,18 @@ The comment character only has significance when it appears at the beginning of 
 * .   - the end of a definition.
 * \[] - an optional part.
 * {}  - 0 or more repetitions.
+* ()  - a group of elements.
 * \|  - or.
 * ..  - a range (from '0' to '9').
 * 'c' - a specific character.
 * EoF - the end of the file marker (int -1). 
 
 ````
-script :: [ commands ] EoF .
+script :: [ commands | comment ] EoF .
 commands :: command { command-separator command } .
 command-separator :: '\n' | ';' .
-command :: word { words-separator word } .
+command :: ( word { words-separator word } ) | comment .
+comment :: '#' any chars but '\n' or EoF .
 word :: basic-word | quoted-word | bracketed-word .
 basic-word :: basic-word-element { basic-word-element } .
 basic-word-element :: text | variable-substitution | command-substitution .
