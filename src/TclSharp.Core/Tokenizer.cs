@@ -47,16 +47,13 @@ public class Tokenizer : ITokenizer
             if (IsCommandsSeparator(c))
             {
                 // Are we extracting a word now?
-                if (wordPartSb == null)
+                if (wordPartSb == null && wordTok == null)
                 {
-                    if (wordTok == null)
-                    {
-                        // No, so consume the command separator char...
-                        _reader.NextChar();
+                    // No, so consume the command separator char...
+                    _reader.NextChar();
                         
-                        // and return the EofC token.
-                        return CurrentToken = _commandSeparatorToken;
-                    }
+                    // and return the EofC token.
+                    return CurrentToken = _commandSeparatorToken;
                 }
                 
                 // A commands separator ends a word. We'll return it below.
