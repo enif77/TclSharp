@@ -52,7 +52,8 @@ const string scriptsFolderPath = "../../../../../scripts/";
 //TestParser(new StringSourceReader("puts \"[ set v \"x]x\" ]\""));  // -> x]x
 //TestParser(new StringSourceReader("puts \"[ set v \"x\\[x\" ]\""));  // -> x[x
 //TestParser(new StringSourceReader("puts \"[ set v \"x]\\\"x\" ]\""));  // -> x]"x
-TestParser(new StringSourceReader("puts \"[ set v \"x\\\"x\" ]\""));  // -> x"x
+//TestParser(new StringSourceReader("puts \"[ set v \"x\\\"x\" ]\""));  // -> x"x
+TestParser(new StringSourceReader("set y [set x 0][incr x][incr x] ; puts $y"));  // -> 012
 
 
 Console.WriteLine("DONE");
@@ -88,6 +89,7 @@ void TestInterpreter()
     var interpreter = new Interpreter(
         new ConsoleOutputWriter());
 
+    interpreter.AddIncrCommand();
     interpreter.AddPutsCommand();
     interpreter.AddSetCommand();
 
@@ -143,6 +145,7 @@ void TestParser(ISourceReader sourceReader)
     var interpreter = new Interpreter(
         new ConsoleOutputWriter());
 
+    interpreter.AddIncrCommand();
     interpreter.AddPutsCommand();
     interpreter.AddSetCommand();
     

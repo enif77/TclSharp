@@ -13,23 +13,46 @@ using TclSharp.Core.Results;
 public static class InterpreterExtensions
 {
     /// <summary>
+    /// Adds the incr command implementation to an interpreter.
+    /// </summary>
+    /// <param name="interpreter">An IInterpreter instance.</param>
+    /// <returns>The IResult representing the add-command operation result.</returns>
+    public static IResult AddIncrCommand(this IInterpreter interpreter)
+    {
+        const string commandName = "incr";
+
+        if (interpreter.IsKnownCommand(commandName))
+        {
+            return SimpleResult.Ok($"The '{commandName}' command implementation was already added.");
+        }
+       
+        var addCommandImplementationResult = interpreter.AddCommandImplementation(
+            commandName,
+            new IncrCommand(interpreter));
+        
+        return addCommandImplementationResult.IsSuccess
+            ? SimpleResult.Ok($"The '{commandName}' command implementation added successfully.")
+            : SimpleResult.Error(addCommandImplementationResult.Message);
+    }
+    
+    /// <summary>
     /// Adds the puts command implementation to an interpreter.
     /// </summary>
     /// <param name="interpreter">An IInterpreter instance.</param>
     /// <returns>The IResult representing the add-command operation result.</returns>
     public static IResult AddPutsCommand(this IInterpreter interpreter)
     {
-        const string putsCommandName = "puts";
+        const string commandName = "puts";
 
-        if (interpreter.IsKnownCommand(putsCommandName))
+        if (interpreter.IsKnownCommand(commandName))
         {
-            return SimpleResult.Ok($"The '{putsCommandName}' command implementation was already added.");
+            return SimpleResult.Ok($"The '{commandName}' command implementation was already added.");
         }
        
-        var addCommandImplementationResult = interpreter.AddCommandImplementation(putsCommandName, new PutsCommand(interpreter));
+        var addCommandImplementationResult = interpreter.AddCommandImplementation(commandName, new PutsCommand(interpreter));
         
         return addCommandImplementationResult.IsSuccess
-            ? SimpleResult.Ok($"The '{putsCommandName}' command implementation added successfully.")
+            ? SimpleResult.Ok($"The '{commandName}' command implementation added successfully.")
             : SimpleResult.Error(addCommandImplementationResult.Message);
     }
     
@@ -40,19 +63,19 @@ public static class InterpreterExtensions
     /// <returns>The IResult representing the add-command operation result.</returns>
     public static IResult AddSetCommand(this IInterpreter interpreter)
     {
-        const string setCommandName = "set";
+        const string commandName = "set";
 
-        if (interpreter.IsKnownCommand(setCommandName))
+        if (interpreter.IsKnownCommand(commandName))
         {
-            return SimpleResult.Ok($"The '{setCommandName}' command implementation was already added.");
+            return SimpleResult.Ok($"The '{commandName}' command implementation was already added.");
         }
        
         var addCommandImplementationResult = interpreter.AddCommandImplementation(
-            setCommandName,
+            commandName,
             new SetCommand(interpreter));
         
         return addCommandImplementationResult.IsSuccess
-            ? SimpleResult.Ok($"The '{setCommandName}' command implementation added successfully.")
+            ? SimpleResult.Ok($"The '{commandName}' command implementation added successfully.")
             : SimpleResult.Error(addCommandImplementationResult.Message);
     }
 }

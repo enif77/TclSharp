@@ -12,6 +12,7 @@ A TCL implementation for .NET in C#.
 
 ## Implemented Commands
 
+* incr - increments the value of a variable.
 * puts - puts a message to an output.
 * set - sets a variable to a value.
 
