@@ -27,43 +27,27 @@ public class SetCommand : ICommandImplementation
     {
         if (scriptCommand == null) throw new ArgumentNullException(nameof(scriptCommand));
 
-        // The first argument is always a command name. So we expect at least two arguments.
-        if (scriptCommand.Arguments.Count <= 1)
+        var getVariableNameResult = GetVariableName(scriptCommand.Arguments);
+        if (getVariableNameResult.IsSuccess == false)
         {
-            return Result<string>.Error("At least one argument, a variable name, expected.");
+            return getVariableNameResult;
         }
 
-        var firstArgument = scriptCommand.Arguments[1];
-        var getFirstArgumentValueResult = _interpreter.Interpret(firstArgument);
-        if (getFirstArgumentValueResult.IsSuccess == false)
-        {
-            return Result<string>.Error(firstArgument.Value, getFirstArgumentValueResult.Message);
-        }
+        var variableName = getVariableNameResult.Data!;
         
-        var variableName = getFirstArgumentValueResult.Data;
-        if (string.IsNullOrWhiteSpace(variableName))
+
+        var getValueResult = GetValue(scriptCommand.Arguments);
+        if (getValueResult.IsSuccess == false)
         {
-            return Result<string>.Error("A variable name expected.");
+            return getValueResult;
         }
 
-        string? value = null;
-
-        if (scriptCommand.Arguments.Count > 2)
-        {
-            var secondArgument = scriptCommand.Arguments[2];
-            var getSecondArgumentValueResult = _interpreter.Interpret(secondArgument);
-            if (getSecondArgumentValueResult.IsSuccess == false)
-            {
-                return Result<string>.Error(secondArgument.Value, getSecondArgumentValueResult.Message);
-            }
-
-            value = getSecondArgumentValueResult.Data ?? string.Empty;
-        }
-
+        var value = getValueResult.Data;        
         if (value != null)
         {
             _interpreter.SetVariableValue(variableName, value);
         }
+        
 
         return Result<string>.Ok(
             _interpreter.HasVariable(variableName)
@@ -74,4 +58,47 @@ public class SetCommand : ICommandImplementation
 
 
     private readonly IInterpreter _interpreter;
+    
+    
+    private IResult<string> GetVariableName(IList<ICommandArgument> arguments)
+    {
+        // The first argument is always a command name. So we expect at least two arguments.
+        if (arguments.Count < 2)
+        {
+            return Result<string>.Error("At least one argument, a variable name, expected.");
+        }
+
+        var variableNameArgument = arguments[1];
+        var interpretArgumentValueResult = _interpreter.Interpret(variableNameArgument);
+        if (interpretArgumentValueResult.IsSuccess == false)
+        {
+            return Result<string>.Error(variableNameArgument.Value, interpretArgumentValueResult.Message);
+        }
+        
+        var variableName = interpretArgumentValueResult.Data;
+        
+        return string.IsNullOrWhiteSpace(variableName)
+            ? Result<string>.Error("A variable name expected.")
+            : Result<string>.Ok(variableName, null);
+    }
+
+
+    private IResult<string> GetValue(IList<ICommandArgument> arguments)
+    {
+        string? value = null;
+        
+        if (arguments.Count > 2)
+        {
+            var valueArgument = arguments[2];
+            var interpretArgumentValueResult = _interpreter.Interpret(valueArgument);
+            if (interpretArgumentValueResult.IsSuccess == false)
+            {
+                return Result<string>.Error(valueArgument.Value, interpretArgumentValueResult.Message);
+            }
+
+            value = interpretArgumentValueResult.Data ?? string.Empty;
+        }
+
+        return Result<string>.Ok(value, null);
+    }
 }

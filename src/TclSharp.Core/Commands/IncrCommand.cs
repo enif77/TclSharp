@@ -1,8 +1,8 @@
 ﻿/* TclSharp - (C) 2022 Premysl Fara */
 
-using System.Globalization;
-
 namespace TclSharp.Core.Commands;
+
+using System.Globalization;
 
 using TclSharp.Core.Results;
 
@@ -53,10 +53,10 @@ public class IncrCommand : ICommandImplementation
             return Result<string>.Error(getIncrementResult.Message);
         }
 
-        var increment = getIncrementResult.Data!;
+        var increment = getIncrementResult.Data;
 
 
-        _interpreter.SetVariableValue(variableName, $"{originalVariableValue + increment}");
+        _interpreter.SetVariableValue(variableName, string.Format(CultureInfo.InvariantCulture, "{0}", originalVariableValue + increment));
 
         return Result<string>.Ok(_interpreter.GetVariableValue(variableName), null);
     }
@@ -67,7 +67,7 @@ public class IncrCommand : ICommandImplementation
 
     private IResult<string> GetVariableName(IList<ICommandArgument> arguments)
     {
-        if (arguments.Count <= 1)
+        if (arguments.Count < 2)
         {
             return Result<string>.Error("At least one argument, a variable name, expected.");
         }
@@ -96,9 +96,9 @@ public class IncrCommand : ICommandImplementation
 
         var variableValue = _interpreter.GetVariableValue(variableName);
 
-        return (int.TryParse(variableValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue) == false) 
-            ? Result<int>.Error(0, $"The '{variableValue}' value of the {variableName} is not a valid integer number.") 
-            : Result<int>.Ok(integerValue);
+        return int.TryParse(variableValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue) 
+            ? Result<int>.Ok(integerValue)
+            : Result<int>.Error(0, $"The '{variableValue}' value of the {variableName} is not a valid integer number.");
     }
 
 
@@ -122,8 +122,8 @@ public class IncrCommand : ICommandImplementation
             ? "1"
             : increment;
 
-        return (int.TryParse(increment, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue) == false) 
-            ? Result<int>.Error(0, $"The '{increment}' value of the increment is not a valid integer number.") 
-            : Result<int>.Ok(integerValue);
+        return int.TryParse(increment, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue) 
+            ? Result<int>.Ok(integerValue)
+            : Result<int>.Error(0, $"The '{increment}' value of the increment is not a valid integer number.");
     }
 }
