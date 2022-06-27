@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\TclSharp.Core.Extensions\TclSharp.Core.Extensions.csproj" />
     <ProjectReference Include="..\TclSharp.Core\TclSharp.Core.csproj" />
   </ItemGroup>
 
