@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\src\TclSharp.Core\TclSharp.Core.csproj" />
-      <ProjectReference Include="..\TclSharp.Core.Commands\TclSharp.Core.Commands.csproj" />
     </ItemGroup>
 
 </Project>

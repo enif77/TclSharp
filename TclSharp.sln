@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B2798E6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Extensions", "TclSharp.Core.Extensions\TclSharp.Core.Extensions.csproj", "{6D698F14-B89D-4A5A-A341-575F184FD5C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Commands", "TclSharp.Core.Commands\TclSharp.Core.Commands.csproj", "{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{6D698F14-B89D-4A5A-A341-575F184FD5C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D698F14-B89D-4A5A-A341-575F184FD5C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D698F14-B89D-4A5A-A341-575F184FD5C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B515C14F-029D-40B2-BEF8-370266628E37} = {8B2798E6-EEFF-40F5-A923-A80570295AAB}
