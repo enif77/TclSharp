@@ -8,9 +8,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B2798E6-EEFF-40F5-A923-A80570295AAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Extensions", "TclSharp.Core.Extensions\TclSharp.Core.Extensions.csproj", "{6D698F14-B89D-4A5A-A341-575F184FD5C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Extensions", "src\TclSharp.Core.Extensions\TclSharp.Core.Extensions.csproj", "{6D698F14-B89D-4A5A-A341-575F184FD5C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Commands", "TclSharp.Core.Commands\TclSharp.Core.Commands.csproj", "{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TclSharp.Core.Commands", "src\TclSharp.Core.Commands\TclSharp.Core.Commands.csproj", "{BA47EA20-DA6E-4464-80C8-1CA5F92688EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
