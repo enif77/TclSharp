@@ -179,7 +179,10 @@ public class Tokenizer : ITokenizer
     
     private static bool IsCommandsSeparator(int c)
         => c is '\n' or ';';
-    
+
+    private static bool IsVariableNameCharacter(int c)
+        => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_';
+
     private static bool IsCommentStart(int c)
         => c is '#';
     
@@ -421,7 +424,7 @@ public class Tokenizer : ITokenizer
         var c = _reader.NextChar();  // Eat '$' 
         if (IsEoF(c))
         {
-            return Result<IToken>.Error("Unexpected '$' at the end of the script.");
+            return Result<IToken>.Ok(new Token(TokenCode.Text, "$"));
         }
 
         var nameSb = new StringBuilder();
@@ -449,7 +452,7 @@ public class Tokenizer : ITokenizer
             // $name = $A-Z,a-z,0-9,_
             while (IsEoF(c) == false)
             {
-                if (c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
+                if (IsVariableNameCharacter(c))
                 {
                     nameSb.Append((char)c);
                     c = _reader.NextChar();
