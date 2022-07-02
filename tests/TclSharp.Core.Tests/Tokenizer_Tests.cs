@@ -261,4 +261,22 @@ public class Tokenizer_Tests
     }
 
     #endregion
+    
+    
+    #region variable substitutions
+    
+    [Theory]
+    [InlineData("$", "$")]
+    //[InlineData("$$", "$$")]
+    //[InlineData("$=", "$=")]
+    public void NotAVariableNameIsWord(string source, string expected)
+    {
+        var t = new Tokenizer(new StringSourceReader(source));
+
+        Assert.Equal(TokenCode.Word, t.NextToken().Code);
+        Assert.Equal(TokenCode.Text, t.CurrentToken.Children[0].Code);
+        Assert.Equal(expected, t.CurrentToken.Children[0].StringValue);
+    }
+    
+    #endregion
 }
