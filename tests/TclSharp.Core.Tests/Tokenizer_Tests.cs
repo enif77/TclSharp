@@ -277,6 +277,15 @@ public class Tokenizer_Tests
         Assert.Equal(TokenCode.Text, t.CurrentToken.Children[0].Code);
         Assert.Equal(expected, t.CurrentToken.Children[0].StringValue);
     }
-    
+
+    [Fact]
+    public void MissingClosingBrackedInVariableDefinitionIsError()
+    {
+        var t = new Tokenizer(new StringSourceReader("${aaa"));
+
+        Assert.Equal(TokenCode.Unknown, t.NextToken().Code);
+        Assert.StartsWith("The '}' variable name delimiter in a variable substitution not found", t.CurrentToken.StringValue);
+    }
+
     #endregion
 }

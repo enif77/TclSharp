@@ -116,7 +116,7 @@ public class Tokenizer : ITokenizer
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
                     {
-                        return ErrorToken(extractCommandSubstitutionResult.Message);
+                        return CurrentToken = ErrorToken(extractCommandSubstitutionResult.Message);
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
@@ -133,7 +133,7 @@ public class Tokenizer : ITokenizer
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
-                        return ErrorToken(extractVariableSubstitutionResult.Message);
+                        return CurrentToken = ErrorToken(extractVariableSubstitutionResult.Message);
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
@@ -432,19 +432,25 @@ public class Tokenizer : ITokenizer
         // ${name} = any-char-except '}'
         if (c == '{')
         {
+            var closingBracketFound = false;
             c = _reader.NextChar();  // Eat '{'.
             while (IsEoF(c) == false)
             {
                 if (c == '}')
                 {
-                    // Eat '}'.
-                    _reader.NextChar();
-                    
+                    closingBracketFound = true;
+                    _reader.NextChar();  // Eat '}'.
+
                     break;
                 }
 
                 nameSb.Append((char)c);
                 c = _reader.NextChar();
+            }
+
+            if (IsEoF(c) && closingBracketFound == false)
+            {
+                return Result<IToken>.Error("The '}' variable name delimiter in a variable substitution not found.");
             }
         }
         else
