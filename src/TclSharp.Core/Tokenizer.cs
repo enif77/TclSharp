@@ -124,6 +124,17 @@ public class Tokenizer : ITokenizer
                     continue;
                 
                 case '$':
+                    var nextChar = _reader.NextChar();
+                    if (IsVariableNameCharacter(nextChar) == false)  // TODO: Allow ${...}!
+                    {
+                        wordPartSb ??= new StringBuilder();
+                        wordPartSb.Append((char)c);           // '$'
+
+                        c = nextChar;
+
+                        continue;
+                    }
+
                     if (wordPartSb != null && wordPartSb.Length > 0)
                     {
                         wordTok ??= WordToken();

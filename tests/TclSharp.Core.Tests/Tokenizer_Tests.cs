@@ -267,8 +267,10 @@ public class Tokenizer_Tests
     
     [Theory]
     [InlineData("$", "$")]
-    //[InlineData("$$", "$$")]
-    //[InlineData("$=", "$=")]
+    [InlineData("$$", "$$")]
+    [InlineData("$=", "$=")]
+    [InlineData("aa$=", "aa$=")]
+    [InlineData("aa$=bb", "aa$=bb")]
     public void NotAVariableNameIsWord(string source, string expected)
     {
         var t = new Tokenizer(new StringSourceReader(source));
