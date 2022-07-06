@@ -285,7 +285,9 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("${aaa"));
 
-        Assert.Equal(TokenCode.Unknown, t.NextToken().Code);
+        var tok = t.NextToken();
+
+        Assert.Equal(TokenCode.Unknown, tok.Code);
         Assert.StartsWith("The '}' variable name delimiter in a variable substitution not found", t.CurrentToken.StringValue);
     }
 

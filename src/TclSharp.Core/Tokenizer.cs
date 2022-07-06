@@ -125,7 +125,7 @@ public class Tokenizer : ITokenizer
                 
                 case '$':
                     var nextChar = _reader.NextChar();
-                    if (IsVariableNameCharacter(nextChar) == false)  // TODO: Allow ${...}!
+                    if (nextChar != '{' && IsVariableNameCharacter(nextChar) == false)
                     {
                         wordPartSb ??= new StringBuilder();
                         wordPartSb.Append((char)c);           // '$'
@@ -432,11 +432,7 @@ public class Tokenizer : ITokenizer
 
     private IResult<IToken> ExtractVariableSubstitution()
     {
-        var c = _reader.NextChar();  // Eat '$' 
-        if (IsEoF(c))
-        {
-            return Result<IToken>.Ok(new Token(TokenCode.Text, "$"));
-        }
+        var c = _reader.CurrentChar;
 
         var nameSb = new StringBuilder();
 
