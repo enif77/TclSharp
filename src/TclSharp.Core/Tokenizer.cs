@@ -239,6 +239,17 @@ public class Tokenizer : ITokenizer
                     break;
                 
                 case '$':
+                    var nextChar = _reader.NextChar();
+                    if (nextChar != '{' && IsVariableNameCharacter(nextChar) == false)
+                    {
+                        wordSb ??= new StringBuilder();
+                        wordSb.Append((char)c);           // '$'
+
+                        c = nextChar;
+
+                        continue;
+                    }
+
                     if (wordSb.Length > 0)
                     {
                         // Add the "prefix" as a child token to the current word.
