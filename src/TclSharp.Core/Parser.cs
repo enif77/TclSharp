@@ -42,8 +42,13 @@ public class Parser : IParser
     /// <returns>A result of the operation.</returns>
     private IResult<string> ParseScript(ITokenizer tokenizer, IScript script)
     {
-        var token = tokenizer.NextToken();
+        var getNextTokenResult = tokenizer.NextToken();
+        if (getNextTokenResult.IsSuccess == false)
+        {
+            return Result<string>.Error(getNextTokenResult.Message);
+        }
 
+        var token = getNextTokenResult.Data!;
         if (token.Code == TokenCode.EoF)
         {
             return Result<string>.Ok();
@@ -73,7 +78,7 @@ public class Parser : IParser
         while (token.Code != TokenCode.EoF)
         {
             currentScriptCommand ??= new ScriptCommand();
-            var parseCommandResult = ParseCommand(tokenizer, currentScriptCommand, false);
+            var parseCommandResult = ParseCommand(tokenizer, currentScriptCommand);
             if (parseCommandResult.IsSuccess == false)
             {
                 return parseCommandResult;
@@ -93,7 +98,13 @@ public class Parser : IParser
             if (token.Code == TokenCode.CommandSeparator)
             {
                 // Now we can consume it now.
-                token = tokenizer.NextToken();
+                var getNextTokenResult = tokenizer.NextToken();
+                if (getNextTokenResult.IsSuccess == false)
+                {
+                    return Result<string>.Error(getNextTokenResult.Message);
+                }
+
+                token = getNextTokenResult.Data!;
             }
             
             // Here we start a next command parsing or we are at EoF.
@@ -107,7 +118,7 @@ public class Parser : IParser
     /// Parses a command.
     /// command :: [ word { words-separator word } ] .
     /// </summary>
-    private IResult<string> ParseCommand(ITokenizer tokenizer, IScriptCommand scriptCommand, bool isNested)
+    private IResult<string> ParseCommand(ITokenizer tokenizer, IScriptCommand scriptCommand)
     {
         var token = tokenizer.CurrentToken;
 

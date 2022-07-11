@@ -24,7 +24,10 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(string.Empty));
 
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     [Fact]
@@ -65,7 +68,10 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("test;"));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
     }
     
     [Fact]
@@ -73,9 +79,10 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("test;"));
 
-        var tok = t.NextToken();
-        
-        Assert.Equal(tok, t.CurrentToken);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(getNextTokenResult.Data!, t.CurrentToken);
     }
     
     [Fact]
@@ -83,8 +90,15 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("test"));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     #endregion
@@ -97,7 +111,11 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("  test"));
 
-        var token = t.NextToken();
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+
+        var token = getNextTokenResult.Data!;
         
         Assert.Equal(TokenCode.Word, token.Code);
         Assert.Equal("test", token.Children[0].StringValue);
@@ -107,23 +125,39 @@ public class Tokenizer_Tests
     public void ClosingWhiteCharsAreIgnored()
     {
         var t = new Tokenizer(new StringSourceReader("test \t "));
-        
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     [Fact]
     public void WhiteCharsAreSeparatingWords()
     {
         var t = new Tokenizer(new StringSourceReader("test1 test2"));
-        
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal("test1", t.CurrentToken.Children[0].StringValue);
-        
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal("test2", t.CurrentToken.Children[0].StringValue);
-        
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+        Assert.Equal("test1", getNextTokenResult.Data!.Children[0].StringValue);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+        Assert.Equal("test2", getNextTokenResult.Data!.Children[0].StringValue);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
 
     #endregion
@@ -140,8 +174,15 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.CommandSeparator, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.CommandSeparator, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     [Theory]
@@ -153,8 +194,15 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.CommandSeparator, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.CommandSeparator, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     [Theory]
@@ -168,9 +216,20 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.CommandSeparator, t.NextToken().Code);
-        Assert.Equal(TokenCode.CommandSeparator, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.CommandSeparator, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.CommandSeparator, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
 
     [Theory]
@@ -182,10 +241,25 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.CommandSeparator, t.NextToken().Code);
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.EoF, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.CommandSeparator, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+
+        getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.EoF, getNextTokenResult.Data!.Code);
     }
     
     #endregion
@@ -209,13 +283,21 @@ public class Tokenizer_Tests
         var t = new Tokenizer(new StringSourceReader(source));
         
         var i = 0;
-        var tok = t.NextToken();
+
+        var getNextTokenResult = t.NextToken();
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+
+        var tok = getNextTokenResult.Data!;
         while (tok.Code != TokenCode.EoF)
         {
             Assert.Equal(tokens[i], tok.Code);
 
             i++;
-            tok = t.NextToken();
+
+            getNextTokenResult = t.NextToken();
+            Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+
+            tok = getNextTokenResult.Data!;
         }
     }
 
@@ -235,7 +317,9 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.Unknown, t.NextToken().Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.False(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
     }
     
     [Theory]
@@ -244,8 +328,11 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.Text, t.CurrentToken.Children[0].Code);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+        Assert.Equal(TokenCode.Text, getNextTokenResult.Data!.Children[0].Code);
     }
     
     [Theory]
@@ -255,9 +342,12 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.Text, t.CurrentToken.Children[0].Code);
-        Assert.Equal(expected, t.CurrentToken.Children[0].StringValue);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+        Assert.Equal(TokenCode.Text, getNextTokenResult.Data!.Children[0].Code);
+        Assert.Equal(expected, getNextTokenResult.Data!.Children[0].StringValue);
     }
 
     #endregion
@@ -275,9 +365,12 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader(source));
 
-        Assert.Equal(TokenCode.Word, t.NextToken().Code);
-        Assert.Equal(TokenCode.Text, t.CurrentToken.Children[0].Code);
-        Assert.Equal(expected, t.CurrentToken.Children[0].StringValue);
+        var getNextTokenResult = t.NextToken();
+
+        Assert.True(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.Equal(TokenCode.Word, getNextTokenResult.Data!.Code);
+        Assert.Equal(TokenCode.Text, getNextTokenResult.Data!.Children[0].Code);
+        Assert.Equal(expected, getNextTokenResult.Data!.Children[0].StringValue);
     }
 
     [Fact]
@@ -285,10 +378,10 @@ public class Tokenizer_Tests
     {
         var t = new Tokenizer(new StringSourceReader("${aaa"));
 
-        var tok = t.NextToken();
+        var getNextTokenResult = t.NextToken();
 
-        Assert.Equal(TokenCode.Unknown, tok.Code);
-        Assert.StartsWith("The '}' variable name delimiter in a variable substitution not found", t.CurrentToken.StringValue);
+        Assert.False(getNextTokenResult.IsSuccess, getNextTokenResult.Message);
+        Assert.StartsWith("The '}' variable name delimiter in a variable substitution not found", getNextTokenResult.Message);
     }
 
     #endregion

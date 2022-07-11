@@ -2,6 +2,8 @@
 
 namespace TclSharp.Core;
 
+using TclSharp.Core.Results;
+
 
 /// <summary>
 /// Defines a tokenizer.
@@ -18,5 +20,5 @@ public interface ITokenizer
     /// Extracts the next token from the source.
     /// </summary>
     /// <returns>The next token from the source or EOF at the end of the source.</returns>
-    IToken NextToken();
+    IResult<IToken> NextToken();
 }

@@ -115,7 +115,15 @@ void TestTokenizer(string source)
 {
     var tokenizer = new Tokenizer(new StringSourceReader(source));
 
-    var token = tokenizer.NextToken();
+    var getNextTokenResult = tokenizer.NextToken();
+    if (getNextTokenResult.IsSuccess == false)
+    {
+        Console.WriteLine(getNextTokenResult.Message);
+
+        return;
+    }
+
+    var token = getNextTokenResult.Data!;
     while (token.Code != TokenCode.EoF)
     {
         switch (token.Code)
@@ -137,7 +145,15 @@ void TestTokenizer(string source)
                 break;
         }
 
-        token = tokenizer.NextToken();
+        getNextTokenResult = tokenizer.NextToken();
+        if (getNextTokenResult.IsSuccess == false)
+        {
+            Console.WriteLine(getNextTokenResult.Message);
+
+            return;
+        }
+
+        token = getNextTokenResult.Data!;
     }
 
     Console.WriteLine(token.Code == TokenCode.EoF

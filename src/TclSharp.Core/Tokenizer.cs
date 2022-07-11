@@ -21,7 +21,7 @@ public class Tokenizer : ITokenizer
     }
 
 
-    public IToken NextToken()
+    public IResult<IToken> NextToken()
     {
         IToken? wordTok = null;
         StringBuilder? wordPartSb = null;
@@ -53,7 +53,7 @@ public class Tokenizer : ITokenizer
                     _reader.NextChar();
                         
                     // and return the EofC token.
-                    return CurrentToken = _commandSeparatorToken;
+                    return Result<IToken>.Ok(CurrentToken = _commandSeparatorToken);
                 }
                 
                 // A commands separator ends a word. We'll return it below.
@@ -85,11 +85,7 @@ public class Tokenizer : ITokenizer
                 case '"':
                     if (wordPartSb == null)
                     {
-                        var extractQuotedWordResult = ExtractQuotedWord();
-                        
-                        return extractQuotedWordResult.IsSuccess
-                            ? CurrentToken = extractQuotedWordResult.Data!
-                            : CurrentToken = ErrorToken(extractQuotedWordResult.Message);
+                        return ExtractQuotedWord();  // TODO: Set CurrentToken?
                     }
                     wordPartSb.Append((char) c);
                     break;
@@ -97,11 +93,7 @@ public class Tokenizer : ITokenizer
                 case '{':
                     if (wordPartSb == null)
                     {
-                        var extractBracketedWordResult = ExtractBracketedWord();
-                        
-                        return extractBracketedWordResult.IsSuccess
-                            ? CurrentToken = extractBracketedWordResult.Data!
-                            : CurrentToken = ErrorToken(extractBracketedWordResult.Message);
+                        return ExtractBracketedWord();  // TODO: Set CurrentToken?
                     }
                     wordPartSb.Append((char) c);
                     break;
@@ -116,7 +108,7 @@ public class Tokenizer : ITokenizer
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
                     {
-                        return CurrentToken = ErrorToken(extractCommandSubstitutionResult.Message);
+                        return extractCommandSubstitutionResult;  // TODO: Set CurrentToken?
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
@@ -144,7 +136,7 @@ public class Tokenizer : ITokenizer
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
-                        return CurrentToken = ErrorToken(extractVariableSubstitutionResult.Message);
+                        return extractVariableSubstitutionResult;  // TODO: Set CurrentToken?
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
@@ -164,13 +156,13 @@ public class Tokenizer : ITokenizer
         // or because we just finished extracting a word.
         if (wordPartSb == null)
         {
-            return CurrentToken = wordTok ?? _eofToken;
+            return Result<IToken>.Ok(CurrentToken = wordTok ?? _eofToken);
         }
 
         wordTok ??= WordToken();
         wordTok.Children.Add(new Token(TokenCode.Text, wordPartSb.ToString()));
         
-        return CurrentToken = wordTok;
+        return Result<IToken>.Ok(CurrentToken = wordTok);
     }
     
     
@@ -235,7 +227,7 @@ public class Tokenizer : ITokenizer
             switch (c)
             {
                 case '\\':
-                    c = EscapeQuotedWordChar(wordSb);
+                    c = EscapeQuotedWordChar();
                     break;
                 
                 case '$':
@@ -312,7 +304,7 @@ public class Tokenizer : ITokenizer
     }
     
     
-    private int EscapeQuotedWordChar(StringBuilder wordSb)
+    private int EscapeQuotedWordChar()
     {
         var c = _reader.NextChar();
 
