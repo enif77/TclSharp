@@ -85,7 +85,7 @@ public class Tokenizer : ITokenizer
                 case '"':
                     if (wordPartSb == null)
                     {
-                        return ExtractQuotedWord();  // TODO: Set CurrentToken?
+                        return ExtractQuotedWord();
                     }
                     wordPartSb.Append((char) c);
                     break;
@@ -93,22 +93,18 @@ public class Tokenizer : ITokenizer
                 case '{':
                     if (wordPartSb == null)
                     {
-                        return ExtractBracketedWord();  // TODO: Set CurrentToken?
+                        return ExtractBracketedWord();
                     }
                     wordPartSb.Append((char) c);
                     break;
                 
                 case '[':
-                    if (wordPartSb != null && wordPartSb.Length > 0)
-                    {
-                        wordTok ??= WordToken();
-                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
-                        wordPartSb = new StringBuilder();
-                    }
+                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
                     {
-                        return extractCommandSubstitutionResult;  // TODO: Set CurrentToken?
+                        return extractCommandSubstitutionResult;
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
@@ -120,23 +116,19 @@ public class Tokenizer : ITokenizer
                     if (nextChar != '{' && IsVariableNameCharacter(nextChar) == false)
                     {
                         wordPartSb ??= new StringBuilder();
-                        wordPartSb.Append((char)c);           // '$'
+                        wordPartSb.Append((char)c);  // '$'
 
                         c = nextChar;
 
                         continue;
                     }
 
-                    if (wordPartSb != null && wordPartSb.Length > 0)
-                    {
-                        wordTok ??= WordToken();
-                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
-                        wordPartSb = new StringBuilder();
-                    }
+                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
-                        return extractVariableSubstitutionResult;  // TODO: Set CurrentToken?
+                        return extractVariableSubstitutionResult;
                     }
                     wordTok ??= WordToken();
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
@@ -164,7 +156,7 @@ public class Tokenizer : ITokenizer
         
         return Result<IToken>.Ok(CurrentToken = wordTok);
     }
-    
+
     
     private readonly ISourceReader _reader;
     private readonly IToken _eofToken = new Token(TokenCode.EoF);
@@ -211,15 +203,11 @@ public class Tokenizer : ITokenizer
     
     private static IToken WordToken(string text) => WordToken(TextToken(text));
 
-    
-    private static IToken ErrorToken(string msg)
-        => new Token(TokenCode.Unknown, msg);
-
 
     private IResult<IToken> ExtractQuotedWord()
     {
         var wordTok = WordToken();
-        var wordSb = new StringBuilder();
+        var wordPartSb = new StringBuilder();
         
         var c = _reader.NextChar();
         while (IsEoF(c) == false)
@@ -234,26 +222,22 @@ public class Tokenizer : ITokenizer
                     var nextChar = _reader.NextChar();
                     if (nextChar != '{' && IsVariableNameCharacter(nextChar) == false)
                     {
-                        wordSb ??= new StringBuilder();
-                        wordSb.Append((char)c);           // '$'
+                        wordPartSb!.Append((char)c);  // '$'
 
                         c = nextChar;
 
                         continue;
                     }
 
-                    if (wordSb.Length > 0)
-                    {
-                        // Add the "prefix" as a child token to the current word.
-                        wordTok.Children.Add(TextToken(wordSb.ToString()));
-                        wordSb = new StringBuilder();
-                    }
+                    // Add the "prefix" as a child token to the current word.
+                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
                     {
                         return extractVariableSubstitutionResult;
                     }
-                    wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
+                    wordTok!.Children.Add(extractVariableSubstitutionResult.Data!);
                     
                     // Here we are at char behind the variable substitution.
                     // We want to process it as if the variable substitution was not here...
@@ -261,10 +245,10 @@ public class Tokenizer : ITokenizer
                     continue;
                 
                 case '[':
-                    if (wordSb.Length > 0)
+                    if (wordPartSb!.Length > 0)
                     {
-                        wordTok.Children.Add(TextToken(wordSb.ToString()));
-                        wordSb = new StringBuilder();
+                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+                        wordPartSb = new StringBuilder();
                     }
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
@@ -281,10 +265,10 @@ public class Tokenizer : ITokenizer
                         return Result<IToken>.Error("An EoF, words or commands separator expected after the quoted word.");
                     }
 
-                    if (wordSb.Length > 0)
+                    if (wordPartSb!.Length > 0)
                     {
                         // Add the "postfix" as a child token to the current word.
-                        wordTok.Children.Add(TextToken(wordSb.ToString()));
+                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
                     }
 
                     if (wordTok.Children.Count == 0)
@@ -292,10 +276,10 @@ public class Tokenizer : ITokenizer
                         // Add the "" as a child token to the current word.
                         wordTok.Children.Add(TextToken(string.Empty));
                     }
-                    return Result<IToken>.Ok(wordTok);
+                    return Result<IToken>.Ok(CurrentToken = wordTok);
             }
 
-            wordSb.Append((char) c);
+            wordPartSb!.Append((char) c);
             
             c = _reader.NextChar();
         }
@@ -351,7 +335,7 @@ public class Tokenizer : ITokenizer
                     if (bracketLevel == 0)
                     {
                         return IsWordEnd(_reader.NextChar())
-                            ? Result<IToken>.Ok(WordToken(wordSb.ToString()))
+                            ? Result<IToken>.Ok(CurrentToken = WordToken(wordSb.ToString()))
                             : Result<IToken>.Error("An EoF, words or commands separator expected.");
                     }
                     break;
@@ -381,7 +365,7 @@ public class Tokenizer : ITokenizer
     
     private IResult<IToken> ExtractCommandSubstitution()
     {
-        var wordSb = new StringBuilder();
+        var wordPartSb = new StringBuilder();
 
         var inQuotedWord = false;
         var bracketLevel = 1;
@@ -392,7 +376,7 @@ public class Tokenizer : ITokenizer
             {
                 case '\\':
                     // This allows to parse the "x\"x" string to the x"x string. 
-                    wordSb.Append('\\');
+                    wordPartSb.Append('\\');
                     c = _reader.NextChar();
                     break;
                 
@@ -417,14 +401,14 @@ public class Tokenizer : ITokenizer
                             // Eat ']'.
                             _reader.NextChar();
                         
-                            return Result<IToken>.Ok(new Token(TokenCode.CommandSubstitution, wordSb.ToString()));
+                            return Result<IToken>.Ok(CurrentToken = new Token(TokenCode.CommandSubstitution, wordPartSb.ToString()));
                         }
                     }
                     break;
                 }
             }
            
-            wordSb.Append((char) c);
+            wordPartSb.Append((char) c);
             
             c = _reader.NextChar();
         }
@@ -482,6 +466,20 @@ public class Tokenizer : ITokenizer
         
         return (nameSb.Length == 0)
             ? Result<IToken>.Error("A variable name expected.")
-            : Result<IToken>.Ok( new Token(TokenCode.VariableSubstitution, nameSb.ToString()));
+            : Result<IToken>.Ok(CurrentToken = new Token(TokenCode.VariableSubstitution, nameSb.ToString()));
+    }
+    
+    
+    private static StringBuilder? AddCollectedWordPart(StringBuilder? wordPartSb, ref IToken? wordTok)
+    {
+        if (wordPartSb == null || wordPartSb.Length == 0)
+        {
+            return wordPartSb;
+        }
+        
+        wordTok ??= WordToken();
+        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+        
+        return new StringBuilder();
     }
 }
