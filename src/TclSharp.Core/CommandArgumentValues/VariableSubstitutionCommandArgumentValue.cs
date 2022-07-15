@@ -20,5 +20,9 @@ public class VariableSubstitutionCommandArgumentValue : ICommandArgumentValue
 
 
     public IResult<string> Interpret(IInterpreter interpreter)
-        => Result<string>.Ok(interpreter.GetVariableValue(Value), null);
+    {
+        return interpreter.HasVariable(Value)
+            ? Result<string>.Ok(interpreter.GetVariableValue(Value), null)
+            : Result<string>.Error($"'{Value}': no such variable");
+    }
 }
