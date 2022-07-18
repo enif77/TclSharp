@@ -42,26 +42,29 @@ const string scriptsFolderPath = "../../../../../scripts/";
 // TestParser(new StringSourceReader("set v XXX; puts xxx${v}xxx"));
 // TestParser(new StringSourceReader("set v XXX; puts ${v}xxx"));
 // TestParser(new StringSourceReader("set v XXX; puts ${v}"));
-//TestParser(new StringSourceReader("set v XXX; puts xxx[set v]"));
-//TestParser(new StringSourceReader("set v XXX; puts [set v]xxx"));
-//TestParser(new StringSourceReader("set v XXX; puts xxx[set v]xxx"));
-//TestParser(new StringSourceReader("set v XXX; puts [set v]"));
-//TestParser(new StringSourceReader("set v XXX; set vv YYY; puts [set v [set vv]]; puts $v"));
+// TestParser(new StringSourceReader("set v XXX; puts xxx[set v]"));
+// TestParser(new StringSourceReader("set v XXX; puts [set v]xxx"));
+// TestParser(new StringSourceReader("set v XXX; puts xxx[set v]xxx"));
+// TestParser(new StringSourceReader("set v XXX; puts [set v]"));
+// TestParser(new StringSourceReader("set v XXX; set vv YYY; puts [set v [set vv]]; puts $v"));
 
-TestParser(new StringSourceReader("puts \"[ set v \"xxx\"]\""));   // -> xxx
-TestParser(new StringSourceReader("puts \"[ set v \"x]x\" ]\""));  // -> x]x
-TestParser(new StringSourceReader("puts \"[ set v \"x\\[x\" ]\""));  // -> x[x
-TestParser(new StringSourceReader("puts \"[ set v \"x]\\\"x\" ]\""));  // -> x]"x
-TestParser(new StringSourceReader("puts \"[ set v \"x\\\"x\" ]\""));  // -> x"x
-TestParser(new StringSourceReader("set y [set x 0][incr x][incr x] ; puts $y"));  // -> 012
+// TestParser(new StringSourceReader("puts \"[ set v \"xxx\"]\""));   // -> xxx
+// TestParser(new StringSourceReader("puts \"[ set v \"x]x\" ]\""));  // -> x]x
+// TestParser(new StringSourceReader("puts \"[ set v \"x\\[x\" ]\""));  // -> x[x
+// TestParser(new StringSourceReader("puts \"[ set v \"x]\\\"x\" ]\""));  // -> x]"x
+// TestParser(new StringSourceReader("puts \"[ set v \"x\\\"x\" ]\""));  // -> x"x
+// TestParser(new StringSourceReader("set y [set x 0][incr x][incr x] ; puts $y"));  // -> 012
 
-TestParser(new StringSourceReader("set greeting \"Hello World!\"; puts $greeting"));  // -> Hello World!
-TestParser(new StringSourceReader("set greeting Hello; set who World; puts \"$greeting $who!\""));  // -> Hello World!
-TestParser(new StringSourceReader("set greeting \"Hello World\"; puts \"$greeting!\""));  // -> Hello World!
-TestParser(new StringSourceReader("puts $nosuchvar"));  // -> Error: no such variable
-TestParser(new StringSourceReader("puts $$"));  // -> $$
-TestParser(new StringSourceReader("puts $="));  // -> $=
-TestParser(new StringSourceReader("puts \"$$\""));  // -> $$
+// TestParser(new StringSourceReader("set greeting \"Hello World!\"; puts $greeting"));  // -> Hello World!
+// TestParser(new StringSourceReader("set greeting Hello; set who World; puts \"$greeting $who!\""));  // -> Hello World!
+// TestParser(new StringSourceReader("set greeting \"Hello World\"; puts \"$greeting!\""));  // -> Hello World!
+// TestParser(new StringSourceReader("puts $nosuchvar"));  // -> Error: no such variable
+// TestParser(new StringSourceReader("puts $$"));  // -> $$
+// TestParser(new StringSourceReader("puts $="));  // -> $=
+// TestParser(new StringSourceReader("puts \"$$\""));  // -> $$
+
+TestParser(new StringSourceReader("set v \"\"; puts aa${v}bb"));  // -> aabb
+TestParser(new StringSourceReader("set v \"-\"; puts aa${v}bb"));  // -> aa-bb
 
 
 Console.WriteLine("DONE");

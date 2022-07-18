@@ -92,7 +92,7 @@ public class Tokenizer : ITokenizer
                     break;
                 
                 case '[':
-                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    wordPartSb = AppendCollectedWordPart(wordPartSb, ref wordTok);
                     
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
@@ -116,7 +116,7 @@ public class Tokenizer : ITokenizer
                         continue;
                     }
 
-                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    wordPartSb = AppendCollectedWordPart(wordPartSb, ref wordTok);
                     
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
@@ -237,7 +237,7 @@ public class Tokenizer : ITokenizer
                     }
 
                     // Add the "prefix" as a child token to the current word.
-                    wordPartSb = AddCollectedWordPart(wordPartSb, ref wordTok);
+                    wordPartSb = AppendCollectedWordPart(wordPartSb, ref wordTok);
                     
                     var extractVariableSubstitutionResult = ExtractVariableSubstitution();
                     if (extractVariableSubstitutionResult.IsSuccess == false)
@@ -252,17 +252,14 @@ public class Tokenizer : ITokenizer
                     continue;
                 
                 case '[':
-                    if (wordPartSb!.Length > 0)
-                    {
-                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
-                        wordPartSb = new StringBuilder();
-                    }
+                    wordPartSb = AppendCollectedWordPart(wordPartSb, ref wordTok);
+                    
                     var extractCommandSubstitutionResult = ExtractCommandSubstitution();
                     if (extractCommandSubstitutionResult.IsSuccess == false)
                     {
                         return extractCommandSubstitutionResult;
                     }
-                    wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
+                    wordTok!.Children.Add(extractCommandSubstitutionResult.Data!);
                     c = _reader.CurrentChar;
                     continue;
                 
@@ -272,13 +269,10 @@ public class Tokenizer : ITokenizer
                         return Result<IToken>.Error("An EoF, words or commands separator expected after the quoted word.");
                     }
 
-                    if (wordPartSb!.Length > 0)
-                    {
-                        // Add the "postfix" as a child token to the current word.
-                        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
-                    }
+                    // Add the chars before the closing " as a child token to the current word.
+                    _ = AppendCollectedWordPart(wordPartSb, ref wordTok);
 
-                    if (wordTok.Children.Count == 0)
+                    if (wordTok!.Children.Count == 0)
                     {
                         // Add the "" as a child token to the current word.
                         wordTok.Children.Add(TextToken(string.Empty));
@@ -477,7 +471,7 @@ public class Tokenizer : ITokenizer
     }
     
     
-    private static StringBuilder? AddCollectedWordPart(StringBuilder? wordPartSb, ref IToken? wordTok)
+    private static StringBuilder? AppendCollectedWordPart(StringBuilder? wordPartSb, ref IToken? wordTok)
     {
         if (wordPartSb == null || wordPartSb.Length == 0)
         {
