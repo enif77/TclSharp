@@ -1,7 +1,5 @@
 /* TclSharp - (C) 2022 Premysl Fara */
 
-using System.Collections.Generic;
-
 namespace TclSharp.Core.Tests;
 
 using System;
