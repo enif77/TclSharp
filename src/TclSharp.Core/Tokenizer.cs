@@ -65,15 +65,8 @@ public class Tokenizer : ITokenizer
                 // Are we extracting a word now?
                 if (wordPartSb == null && wordTok == null)
                 {
-                    // No, so consume the comment start char...
-                    c = _reader.NextChar();
-                        
-                    // and skip all chars till the nearest EoLN or EoF.
-                    while (IsCommentEnd(c) == false)
-                    {
-                        c = _reader.NextChar();
-                    }
-                    
+                    c = SkipComment();
+
                     continue;
                 }
                 
@@ -157,7 +150,6 @@ public class Tokenizer : ITokenizer
         return Result<IToken>.Ok(CurrentToken = wordTok);
     }
 
-    
     private readonly ISourceReader _reader;
     private readonly IToken _eofToken = new Token(TokenCode.EoF);
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
@@ -203,6 +195,21 @@ public class Tokenizer : ITokenizer
     
     private static IToken WordToken(string text) => WordToken(TextToken(text));
 
+    
+    private int SkipComment()
+    {
+        // No, so consume the comment start char...
+        var c = _reader.NextChar();
+
+        // and skip all chars till the nearest EoLN or EoF.
+        while (IsCommentEnd(c) == false)
+        {
+            c = _reader.NextChar();
+        }
+
+        return c;
+    }
+    
 
     private IResult<IToken> ExtractQuotedWord()
     {
