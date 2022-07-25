@@ -145,12 +145,14 @@ public class Tokenizer : ITokenizer
         }
 
         wordTok ??= WordToken();
-        wordTok.Children.Add(new Token(TokenCode.Text, wordPartSb.ToString()));
+        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
         
         return Result<IToken>.Ok(CurrentToken = wordTok);
     }
 
+    
     private readonly ISourceReader _reader;
+    
     private readonly IToken _eofToken = new Token(TokenCode.EoF);
     private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
 
@@ -158,29 +160,37 @@ public class Tokenizer : ITokenizer
     private static bool IsEoF(int c)
         => c < 0;
     
+    
     private static bool IsWhiteSpace(int c)
         => IsCommandsSeparator(c) == false && char.IsWhiteSpace((char)c);
 
+    
     private static bool IsWordEnd(int c)
         => IsEoF(c) || IsCommandsSeparator(c) || IsWhiteSpace(c);
+    
     
     private static bool IsCommandsSeparator(int c)
         => c is '\n' or ';';
 
+    
     private static bool IsVariableNameCharacter(int c)
         => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_';
 
+    
     private static bool IsCommentStart(int c)
         => c is '#';
+    
     
     private static bool IsCommentEnd(int c)
         => c == '\n' || IsEoF(c);
 
     
-    private static IToken TextToken(string text) => new Token(TokenCode.Text, text);
+    private static IToken TextToken(string text)
+        => new Token(TokenCode.Text, text);
     
     
-    private static IToken WordToken() => new Token(TokenCode.Word, "word");
+    private static IToken WordToken()
+        => new Token(TokenCode.Word, "word");
 
 
     private static IToken WordToken(IToken child)
@@ -193,12 +203,13 @@ public class Tokenizer : ITokenizer
     }
     
     
-    private static IToken WordToken(string text) => WordToken(TextToken(text));
+    private static IToken WordToken(string text)
+        => WordToken(TextToken(text));
 
     
     private int SkipComment()
     {
-        // No, so consume the comment start char...
+        // Consume the comment start char...
         var c = _reader.NextChar();
 
         // and skip all chars till the nearest EoLN or EoF.
