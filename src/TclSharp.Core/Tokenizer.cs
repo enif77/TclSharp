@@ -99,7 +99,7 @@ public class Tokenizer : ITokenizer
                     {
                         return extractCommandSubstitutionResult;
                     }
-                    wordTok ??= WordToken();
+                    wordTok ??= Token.WordToken();
                     wordTok.Children.Add(extractCommandSubstitutionResult.Data!);
                     c = _reader.CurrentChar;
                     continue;
@@ -123,7 +123,7 @@ public class Tokenizer : ITokenizer
                     {
                         return extractVariableSubstitutionResult;
                     }
-                    wordTok ??= WordToken();
+                    wordTok ??= Token.WordToken();
                     wordTok.Children.Add(extractVariableSubstitutionResult.Data!);
                     c = _reader.CurrentChar;
                     continue;
@@ -144,8 +144,8 @@ public class Tokenizer : ITokenizer
             return Result<IToken>.Ok(CurrentToken = wordTok ?? _eofToken);
         }
 
-        wordTok ??= WordToken();
-        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+        wordTok ??= Token.WordToken();
+        wordTok.Children.Add(Token.TextToken(wordPartSb.ToString()));
         
         return Result<IToken>.Ok(CurrentToken = wordTok);
     }
@@ -153,8 +153,8 @@ public class Tokenizer : ITokenizer
     
     private readonly ISourceReader _reader;
     
-    private readonly IToken _eofToken = new Token(TokenCode.EoF);
-    private readonly IToken _commandSeparatorToken = new Token(TokenCode.CommandSeparator);
+    private readonly IToken _eofToken = Token.EofToken();
+    private readonly IToken _commandSeparatorToken = Token.CommandSeparatorToken();
 
 
     private static bool IsEoF(int c)
@@ -185,28 +185,6 @@ public class Tokenizer : ITokenizer
         => c == '\n' || IsEoF(c);
 
     
-    private static IToken TextToken(string text)
-        => new Token(TokenCode.Text, text);
-    
-    
-    private static IToken WordToken()
-        => new Token(TokenCode.Word, "word");
-
-
-    private static IToken WordToken(IToken child)
-    {
-        var tok = WordToken();
-        
-        tok.Children.Add(child);
-
-        return tok;
-    }
-    
-    
-    private static IToken WordToken(string text)
-        => WordToken(TextToken(text));
-
-    
     private int SkipComment()
     {
         // Consume the comment start char...
@@ -224,7 +202,7 @@ public class Tokenizer : ITokenizer
 
     private IResult<IToken> ExtractQuotedWord()
     {
-        var wordTok = WordToken();
+        var wordTok = Token.WordToken();
         var wordPartSb = new StringBuilder();
         
         var c = _reader.NextChar();
@@ -286,7 +264,7 @@ public class Tokenizer : ITokenizer
                     if (wordTok!.Children.Count == 0)
                     {
                         // Add the "" as a child token to the current word.
-                        wordTok.Children.Add(TextToken(string.Empty));
+                        wordTok.Children.Add(Token.TextToken(string.Empty));
                     }
                     return Result<IToken>.Ok(CurrentToken = wordTok);
             }
@@ -347,7 +325,7 @@ public class Tokenizer : ITokenizer
                     if (bracketLevel == 0)
                     {
                         return IsWordEnd(_reader.NextChar())
-                            ? Result<IToken>.Ok(CurrentToken = WordToken(wordSb.ToString()))
+                            ? Result<IToken>.Ok(CurrentToken = Token.WordToken(wordSb.ToString()))
                             : Result<IToken>.Error("An EoF, words or commands separator expected.");
                     }
                     break;
@@ -413,7 +391,7 @@ public class Tokenizer : ITokenizer
                             // Eat ']'.
                             _reader.NextChar();
                         
-                            return Result<IToken>.Ok(CurrentToken = new Token(TokenCode.CommandSubstitution, wordPartSb.ToString()));
+                            return Result<IToken>.Ok(CurrentToken = Token.CommandSubstitutionToken(wordPartSb.ToString()));
                         }
                     }
                     break;
@@ -478,7 +456,7 @@ public class Tokenizer : ITokenizer
         
         return (nameSb.Length == 0)
             ? Result<IToken>.Error("A variable name expected.")
-            : Result<IToken>.Ok(CurrentToken = new Token(TokenCode.VariableSubstitution, nameSb.ToString()));
+            : Result<IToken>.Ok(CurrentToken = Token.VariableSubstitutionToken(nameSb.ToString()));
     }
     
     
@@ -489,8 +467,8 @@ public class Tokenizer : ITokenizer
             return wordPartSb;
         }
         
-        wordTok ??= WordToken();
-        wordTok.Children.Add(TextToken(wordPartSb.ToString()));
+        wordTok ??= Token.WordToken();
+        wordTok.Children.Add(Token.TextToken(wordPartSb.ToString()));
         
         return new StringBuilder();
     }
